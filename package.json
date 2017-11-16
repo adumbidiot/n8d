@@ -1,0 +1,27 @@
+{
+  "name": "n8d",
+  "version": "1.0.0",
+  "description": "website",
+  "main": "index.js",
+  "dependencies": {
+    "fastify": "^0.34.0",
+    "fastify-static": "^0.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adumbidiot/n8d.git"
+  },
+  "keywords": [
+    "website"
+  ],
+  "author": "nano",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adumbidiot/n8d/issues"
+  },
+  "homepage": "https://github.com/adumbidiot/n8d#readme"
+}
