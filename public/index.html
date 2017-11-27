@@ -1,17 +1,22 @@
 <html>
 	<head>
 		<title>Home</title>
-		<link rel="stylesheet" href="/css/blaze.min.css">
-		<link rel="stylesheet" href="/css/font-awesome.min.css">
+		<script src="/scripts/jquery-3.2.1.min.js"></script>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<script src="/scripts/popper.min.js"></script>
+		<script src="/scripts/bootstrap.min.js"></script>
 		<script src="/scripts/riot+compiler.min.js"></script>
 		<script src="/tags/navbar.tag" type="riot/tag"></script>
 	</head>
 	<body>
 		<navbar></navbar>
-		<h1>Home</h1>
-		<div>
-			<a href="/experiments">Experiments</a>
+		<div class="container text-center" style="padding-top: 40px;">
+			<h1 style="font-weight: 200;">Home</h1>
+			<div>
+				<a href="/experiments">Experiments</a>
+			</div>
 		</div>
+		
 		<script>
 			riot.mount('navbar');
 		</script>
