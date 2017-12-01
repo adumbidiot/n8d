@@ -4,6 +4,28 @@
 		<script src="./quizzizz-code-finder.js"></script>
 	</head>
 	<body>
+		<div style="position:absolute; top:0px; right:120px;border: 2px solid black; border-radius: 10px; height: 20px; width: 130px; text-align:center" id="connection-count"></div>
+		<div style="position:absolute; top:0px; right:10px;border: 2px solid black; border-radius: 10px; height: 20px; width: 100px; text-align:center" id="try-count"></div>
+		<ul id="code">
 		
+		</ul>
+		<script>
+		let codeOut = document.getElementById('code');
+		let connectionCount = document.getElementById('connection-count');
+		let tryCount = document.getElementById('try-count');
+		
+		let finder = new codeFinder();
+		finder.oncode = function(code){
+			let el = document.createElement('li');
+			el.innerHTML += code;
+			codeOut.appendChild(el);
+		}
+		finder.onconnection = function(connections){
+			connectionCount.innerHTML = 'Connections: ' + connections;
+		}
+		finder.ontry = function(tries){
+			tryCount.innerHTML = 'Tries: ' + tries;
+		}
+		</script>
 	</body>
 </html>
