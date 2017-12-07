@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<title>Ascifiier</title>
+		<script src="/scripts/jquery-3.2.1.min.js"></script>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<script src="/scripts/popper.min.js"></script>
+		<script src="/scripts/bootstrap.min.js"></script>
+		<script src="/scripts/riot+compiler.min.js"></script>
+		<script src="/tags/navbar.tag" type="riot/tag"></script>
+		<script src="/scripts/jscii.js"></script>
+	</head>
+	<body>
+		<navbar></navbar>
+		<div>
+			<img crossOrigin="" src="https://i.imgur.com/umnpg2P.jpg" id="img" width="346px"></img>
+		</div>
+		<pre id="out" style="font-size: 3.7px;" width="346px"></pre>
+		<script>
+			riot.mount('navbar');
+		</script>
+		<script>
+			let img = new Jscii({
+				width: 200,
+				color: false,
+				el: document.getElementById('img'),
+				fn: function(str){
+					///str = str.replace(/-/g, '-/');
+					///str = str.replace(/\*/g, '*/');
+					///str = str.replace(/~~/g, '*/');
+					document.getElementById('out').innerHTML = str;
+				}
+			});
+		</script>
+	</body>
+</html>

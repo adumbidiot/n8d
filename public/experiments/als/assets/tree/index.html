@@ -1,0 +1,24 @@
+<html>
+	<body>
+		<canvas id = "canvas" width="100" height = "200"></canvas>
+		<script>
+			let ctx = document.getElementById('canvas').getContext('2d');
+			var centerX = canvas.width / 2;
+   	 		var centerY = canvas.height / 2;
+
+
+			ctx.fillStyle = "brown";
+			ctx.fillRect(centerX/2, centerY, centerX, ctx.canvas.height);
+
+
+
+			
+    			var radius = 50;
+
+    			ctx.beginPath();
+    			ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+    			ctx.fillStyle = "green";
+    			ctx.fill();
+		</script>	
+	</body>
+</html>

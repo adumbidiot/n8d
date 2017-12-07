@@ -1,0 +1,168 @@
+<html>
+	<head>
+		<script src="./skeleton.js"></script>
+		<script>
+			var canvas;
+			var ctx;
+			var mainLoop;
+			var leftDown = false;
+			var upDown = false;
+			var rightDown = false;
+			var downDown = false;
+			
+			var B0 = 'Block';
+			var D0 = 'Decoration_Scaffold';
+			var D1 = 'Decoration_Sconce';
+			var WR = 'WireRed';
+			var E0 = 'Exit';
+			var X0 = 'MAIN';
+
+			const lvlArray = [];
+
+			lvlArray[ 0 ] = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
+			lvlArray[0][ 0 ] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,00,00,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0];
+			lvlArray[0][ 1 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0];
+			lvlArray[0][ 2 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0];
+			lvlArray[0][ 3 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,00,00,00,00,00,D0,00,00,B0];
+			lvlArray[0][ 4 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,00,00,00,00,D0,00,00,B0];
+			lvlArray[0][ 5 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,00,00,WR,D0,00,00,B0];
+			lvlArray[0][ 6 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,00,WR,D0,00,00,B0];
+			lvlArray[0][ 7 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,WR,D0,D1,00,B0];
+			lvlArray[0][ 8 ] = [B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,WR,WR,WR,WR,D0,00,00,B0];
+			lvlArray[0][ 9 ] = [00,00,00,00,00,00,00,00,D1,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,00];
+			lvlArray[0][ 10] = [00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,E0,00,00];
+			lvlArray[0][ 11] = [B0,B0,00,00,00,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,B0,B0,B0,B0,B0];
+			lvlArray[0][ 12] = [B0,00,00,00,00,D0,D0,00,00,00,00,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0];
+			lvlArray[0][ 13] = [B0,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,B0];
+			lvlArray[0][ 14] = [00,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,00];
+			lvlArray[0][ 15] = [00,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,00,00,00];
+			lvlArray[0][ 16] = [00,00,00,00,00,D0,D0,00,00,00,00,B0,B0,B0,00,00,00,00,00,00,00,00,00,00,00,00,00,00,D0,X0,00,00];
+			lvlArray[0][ 17] = [B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,00,00,00,00,00,00,00,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0,B0];
+			
+			//lvlArray[0] = zero2D(18, 32);
+			function load(array, level){
+				//console.log(array);
+				for(rowIndex in array[level]){
+					for(blockIndex in array[level][rowIndex]){	
+						switch(array[level][rowIndex][blockIndex]){
+							case 'Block': {
+								blocks.blockArray[rowIndex][blockIndex] = blocks.block;
+								break;
+							}
+							case 'MAIN': {
+								skeleton.x = blockIndex * 25 * 2;
+								skeleton.y = rowIndex * 25 * 2;
+								break;
+							}	
+						}
+					}
+				}
+				//blocks.blockArray[-1] = blocks.block; 
+				//blocks.blockArray[19] = blocks.block; 
+			}
+			
+			function zero2D(rows, cols) {
+  				var array = [], row = [];
+  				while (cols--) row.push(0);
+  				while (rows--) array.push(row.slice());
+  				return array;
+			}
+
+			var background = {};
+			background.image = new Image();
+			background.image.src = './bg.png';
+			background.draw = function(context){
+				context.drawImage(background.image, 0, 0, canvas.width, canvas.height);
+			}
+
+			var blocks = {};
+			blocks.blockArray = zero2D(18, 32);
+			blocks.block = new Image();
+			blocks.block.src = './block.png';
+			blocks.draw = function(ctx){
+				for(var i = 0; i != 18; i++){
+					for(var j = 0; j != 32; j++){
+						if(blocks.blockArray[i][j] != 0){
+							ctx.drawImage(blocks.blockArray[i][j], j * 25 * 2, i * 25 * 2);
+						}	
+					}
+				}
+			}
+
+			window.onload = function(){
+				canvas = document.getElementById('game');
+				ctx = canvas.getContext('2d');
+				ctx.imageSmoothingEnabled = false;
+				ctx.webkitImageSmoothingEnabled = false;
+				ctx.mozImageSmoothingEnabled = false;
+				load(lvlArray, 0);
+				mainLoop = setInterval(gameLoop, 1000/60);
+			}
+
+			function gameLoop(){
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				background.draw(ctx);
+				blocks.draw(ctx);
+				skeleton.draw(ctx);
+			}
+			
+			function pause(){
+				clearTimeout(mainLoop);
+			}
+			
+			window.onkeydown = function(event){
+				switch(event.keyCode){
+					case 65:
+					case 37: {
+						leftDown = true;
+						break;
+					}
+					case 87:
+					case 38: {
+						upDown = true;
+						break;
+					}
+					case 68:
+					case 39: {
+						rightDown = true;
+						break;
+					}
+					case 83:
+					case 40: {
+						downDown = true;
+						break;
+					}	
+				}
+				//console.log(event.keyCode); //Debug
+			}
+
+			window.onkeyup = function(event){
+				switch(event.keyCode){
+					case 65:
+					case 37: {
+						leftDown = false;
+						break;
+					}
+					case 87:
+					case 38: {
+						upDown = false;
+						break;
+					}
+					case 68:
+					case 39: {
+						rightDown = false;
+						break;
+					}
+					case 83:
+					case 40: {
+						downDown = false;;
+						break;
+					}	
+				}
+			}
+		</script>
+	</head>
+	<body style="background: powderblue;">
+		<canvas width="1600" height="900" id ="game" style="width:800px;height:450px;"></canvas>
+	</body>
+</html>

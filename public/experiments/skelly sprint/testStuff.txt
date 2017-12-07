@@ -1,0 +1,93 @@
+handleCollisionWIP: function(){
+		var gridLocX = Math.round(skeleton.x/50);
+		var gridLocY = Math.round(skeleton.y/50);
+		if(blocks.blockArray[(gridLocX/50) + 1] != 0){
+			var blockX = gridLocX + 50;
+			var blockY = gridLocY;
+			//skeleton.handleCollisionWithBlock(gridLocX, gridLocY, blockX, blockY);
+		}
+		//console.log(gridLocX);
+		if(blocks.blockArray[gridLocY] && blocks.blockArray[gridLocY][gridLocX] && blocks.blockArray[gridLocY][gridLocX + 1] != 0){
+			var blockX = gridLocX * 50;
+			var blockY = gridLocY * 50 + 50;
+			skeleton.handleCollisionWithBlock(gridLocX, gridLocY, blockX, blockY);
+		}
+		if(blocks.blockArray[gridLocY + 1] && blocks.blockArray[gridLocY + 1][gridLocX] && blocks.blockArray[gridLocY + 1][gridLocX] != 0){
+			var blockX = gridLocX * 50 + 50;
+			var blockY = gridLocY * 50;
+			skeleton.handleCollisionWithBlock(gridLocX, gridLocY, blockX, blockY);
+		}
+		if(blocks.blockArray[gridLocY - 1] && blocks.blockArray[gridLocY -1][gridLocX] && blocks.blockArray[gridLocY - 1][gridLocX] != 0){
+			var blockX = gridLocX * 50 - 50;
+			var blockY = gridLocY * 50;
+			skeleton.handleCollisionWithBlock(gridLocX, gridLocY, blockX, blockY);
+		}
+		if(blocks.blockArray[gridLocY - 1] && blocks.blockArray[gridLocY -1][gridLocX] && blocks.blockArray[gridLocY - 1][gridLocX] != 0){
+			var blockX = gridLocX * 50;
+			var blockY = gridLocY * 50 - 50;
+			skeleton.handleCollisionWithBlock(gridLocX, gridLocY, blockX, blockY);
+		}
+	},
+	handleCollisionWithBlockWIP: function(skeletonX, skeletonY, blockX, blockY){
+		if(skeleton.x + 50 > blockX && skeleton.x < blockX + 50){
+			//skeleton.x = blockX - 50;
+		}
+		if((skeleton.y + 50 > blockY && skeleton.y < blockY + 50) && (skeleton.x + 50 > blockX && skeleton.x < blockX + 50)){
+			skeleton.y = blockY - 50;
+			console.log('collide ' + skeleton.y);
+
+			return {
+				x: Math.round(skeleton.x/50),
+				y: Math.round(skeleton.Y/50)
+			}
+		}
+	},
+	handleCollisionLegacy: function(){
+		//TODO: Rewrite collider?
+		//Experimental collider to speed up game
+		var upperX = Math.ceil(skeleton.x/50); //Get upper x and y locations on grid
+		var upperY = Math.ceil(skeleton.y/50);
+		var lowerX = Math.floor(skeleton.x/50);
+		var lowerY = Math.floor(skeleton.y/50);
+		skeleton.handleCollisionX(upperX, upperY, lowerX, lowerY);
+		if(skeleton.collidableBlockExists(lowerY, upperX)){
+			if(skeleton.x > (upperX * 50) - 50){
+				console.log('[collide] lowerY: ' + lowerY + ', upperX: ' + upperX);
+				skeleton.x = (upperX * 50) - 50;
+			}		
+		}
+		if(skeleton.collidableBlockExists(lowerY, lowerX)){
+			if(skeleton.x > (lowerX * 50) - 50){
+				//console.log('collide');
+				skeleton.x = (lowerX * 50) + 50;
+			}
+			//console.log(upperX*50 + '|' + skeleton.x);
+			//console.log(lowerY + '|' + upperY);		
+		}
+		
+	},
+	handleCollisionXLegacy: function(upperX, upperY, lowerX, lowerY){
+		//console.log(skeleton);
+		if(skeleton.collidableBlockExists(upperY, upperX)){
+			if(skeleton.y <= upperY * 50){
+				console.log('collide');
+			}
+			skeleton.y = (upperY * 50) - 50;
+			return true;
+		}
+		if(skeleton.collidableBlockExists(upperY, lowerX)){
+			if(skeleton.y <= upperY * 50){
+				console.log('collide');
+			}
+			skeleton.y = (upperY * 50) - 50;
+			return true;
+		}
+		if(skeleton.collidableBlockExists(lowerY, upperX)){		
+			skeleton.y = (lowerY * 50) - 50;
+			return true;
+		}
+		if(skeleton.collidableBlockExists(lowerY, lowerX)){
+			skeleton.y = (lowerY * 50) - 50;
+			return true;
+		}
+	},

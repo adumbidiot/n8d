@@ -1,0 +1,51 @@
+Magic Number: 
+	1	S 	ASCII
+	2	K 	ASCII
+	3	S	ASCII
+Version:
+	4	1	UINT8
+Custom Defenitions:
+	Tags:
+		0x80	TILEBITMAPDEF	UINT8
+			0x{ID*}	{Block_Name}	UINT8
+			{BITMAP**}	BITMAP	BITMAP
+Body:
+	Tags:
+		0x00	NULL	(00)	UINT8
+		0x01	MAIN	(X0)	UINT8
+		0x02	Block	(B0)	UINT8	
+		0x03	Block_Key	(BK)	UINT8
+		0x04	Exit	(E0)	UINT8
+		0x05	Switch	(S0)	UINT8
+		0x06	ToggleBlockSolid	(T0)	UINT8
+		0x07	ToggleBlockPhase	(T1)	UINT8
+		0x08	WireRed		(WR)	UINT8
+		0x09	PowerUpBurrow	(P0)	UINT8
+		0x0A	Item_Key	(IK)	UINT8
+		0x0B	SecretExit	(Z0)	UINT8
+		0x0C	Decoration_Scaffold	(D0)	UINT8
+		0x0D	Decoration_Sconce	(D1)	UINT8
+		0x0E	Decoration_Coffin	(D2)	UINT8
+		0x0F	Mask_Circle	(A0)	UINT8
+		0x10	Cobble_BG	(M0)	UINT8
+		0x11	
+
+Notes:
+	*Users should define tags starting at 255, going down to the pre-defined tiles. That provides a couple dozen custom tile possibilities. If people need more, a drastic change to the file format may be necessary. Users can override preexisting tiles.
+	**Not really a bitmap. Just 8 * 3 * 25 * 25 size array of ARGB values. (See AS3's BitmapData.setPixels(bytearray)).
+
+Other Notes:
+        this.M1 = "Waterfall_BG";
+        this.M2 = "SkullFall_BG";
+        this.M3 = "Concrete_BG";
+        this.M4 = "Undefined_BG";
+        this.M5 = "Undefined_BG";
+        this.M6 = "Undefined_BG";
+        this.OU = "OneWayWall_Up";
+        this.OD = "OneWayWall_Down";
+        this.OL = "OneWayWall_Left";
+        this.OR = "OneWayWall_Right";
+        this.CP = "Pipe_Phase";
+        this.CS = "Pipe_Solid";
+        this.CI = "Pipe_In";
+        this.CO = "Pipe_Out";	 

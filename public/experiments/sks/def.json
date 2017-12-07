@@ -1,0 +1,26 @@
+{[
+	{
+		"name": "NULL",
+		"signature": "00"	
+	},
+	{
+		"name": "MAIN",
+		"signature": "X0"	
+	},
+	{
+		"name": "Block",
+		"signature": "B0"	
+	},
+	{
+		"name": "Block_Key",
+		"signature": "BK"	
+	},
+	{
+		"name": "Exit",
+		"signature": "E0"	
+	},
+	{
+		"name": "Switch",
+		"signature": "S0"	
+	}
+]}

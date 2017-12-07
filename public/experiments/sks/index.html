@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<script src="UTF8TextFile.js"></script>
+		<script src="LBL.js"></script>
+		<script src="skeletonSprintRenderer.js"></script>
+		<script src="SKSFile.js"></script>
+		<script src="js/download.min.js"></script>
+	</head>
+	<body>
+		<canvas id="canvas" width="800" height="450"></canvas>
+		<button onclick="renderer.renderArray(lbl.chunkArray, 'lbl');">LBL</button>
+		<button onclick="renderer.renderArray(sks.buffer, 'sks');">SKS</button>
+		<button onclick="renderer.renderArray(sks2.buffer, 'sks');">SKS2</button>
+		<script>
+			let renderer = new SkeletonSprintRenderer('canvas', 'images');
+			
+			let lbl = new LBL();
+			lbl.load('custom2.txt', function(){
+				console.log(lbl.magicNumber);
+				sks.fromLBLArray(lbl.chunkArray);
+			});
+			
+			let sks = new SKSFile();
+			let sks2 = new SKSFile();
+			sks2.load('level.sks');
+		</script>
+	</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<h1>Fingerprint:</h1>
+	</body>
+	<script src = "https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/1.4.1/fingerprint2.min.js"></script>
+	<script>
+		new Fingerprint2().get(function(result, components){
+  			console.log(result); //a hash, representing your device fingerprint
+  			console.log(components); // an array of FP components
+			var out = document.createElement('p');
+			out.innerText = result;
+			document.getElementsByTagName('body')[0].appendChild(out);
+		});
+	</script>
+</html>

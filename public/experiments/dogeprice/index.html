@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<script src = "./shapeshift.js"></script>
+		<script src = "./coindesk.js"></script>
+		<script src = "./bitpay.js"></script>
+	</head>
+	<body>
+		<div align="center">
+			<textarea id = "in" style="width:50%;height:50%;">Doge here</textarea>
+			<br>
+			<button onclick="usd()" style="width:50%;height:50%;">many many usd</button>
+		</div>
+		
+		<script>
+			function usd(){
+				if(!doge || !btc){
+					document.getElementById("in").value = 'ERROR STILL SETTING UP MULTIPLIERS';
+					return false;
+				}
+				var input = document.getElementById("in").value || 0;
+				
+				var base = Number(input);
+				if(Number.isNaN(base)){
+					if(input.substr(0,1) == '$'){ 
+						
+						base = Number(input.substr(1, input.length));
+						console.log(base);
+					}else{
+						document.getElementById("in").value = 'ERROR PARSING INPUT';
+						return false;
+					}
+				}
+				
+				document.getElementById("in").value = '$' + (base * doge * btc);	
+			}	
+			var doge = null;
+			var btc = null;
+			
+			SHAPESHIFT.getRate('doge_btc').then(function(data){
+				console.log(data);
+				doge = Number(data);
+			});
+  			
+			BITPAY.getRate('btc_usd').then(function(data){
+				console.log(data);
+				btc = data;
+			});
+		</script>
+	</body>
+</html>

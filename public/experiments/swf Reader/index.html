@@ -1,0 +1,114 @@
+<html>
+	<head>
+		<title>SWF Parser</title>
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/pako/1.0.3/pako.min.js"></script><!--Dependency for compressed swfs-->
+		<script src="swfFile.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+	<body>
+		<div id="main">
+		
+		</div>
+		<br>
+		<br>
+		<div id="stats">
+			<h4>Stats: </h4>
+		</div>
+		<br>
+		<br>
+		<script id="display" type="text/x-handlebars-template">
+			<div class = "container" style="">
+				<h1>File</h1>
+				
+				<div class="panel-group">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse" href="#header">Header</a>
+							</h4>
+						</div>
+						<div id="header" class="panel-collapse collapse">
+							<div class="panel-body">
+								<p>Signature: {{swf.signature}}</p>
+								<p>Compression: {{swf.compression}}</p>
+								<p>Version: {{swf.version}}</p>
+								<p>Decompressed Size: {{swf.decompressedSize}} bytes</p>
+								<p>Width: {{swf.width}} px</p>
+								<p>Height: {{swf.height}} px</p>
+								<p>Frame Rate: {{swf.frameRate}} fps</p>
+								<p>Frame Count: {{swf.frameCount}} frame(s)</p>
+							</div>
+							<div class="panel-footer">End of Header</div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<a data-toggle="collapse" href="#tags">Tags</a>
+							</h4>
+						</div>
+						<div id="tags" class="panel-collapse collapse">
+							<div class="panel-body">
+								{{#tags swf.tags}}{{/tags}}
+							</div>
+							<div class="panel-footer">End of Tags</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</script>
+		<script>
+			Handlebars.registerHelper('tags', function(tags){
+			let out = '';
+				for(let i = 0; i != tags.length; i++){
+					out += '<div class="panel panel-default">' +
+						'<div class="panel-heading">' +
+							'<h4 class="panel-title">' +
+								'<a data-toggle="collapse" href="#' + i + '">' + (manifest[file.tags[i].header.code] ? manifest[file.tags[i].header.code] : "Unknown") + ' (Tag ' + i + ')</a>' +
+							'</h4>' +
+						'</div>' +
+						'<div id="' + i + '" class="panel-collapse collapse">' +
+							'<div class="panel-body">' +
+								'<p>Code: ' + tags[i].header.code + '</p>'+
+								'<p>Size: ' + tags[i].size + '</p>' +
+							'</div>' +
+							'<div class="panel-footer">End of Tag</div>' +
+						'</div>' +
+					'</div>';
+				}
+				return out;
+			});
+			let data = document.getElementById('display').innerHTML;
+			let display = Handlebars.compile(data);
+			
+			
+			var file = new swfFile();
+			var swfReq = new XMLHttpRequest();
+			swfReq.responseType = "arraybuffer";
+			swfReq.onreadystatechange = function(){
+				if(this.readyState == 4 && this.status == 200){
+					file.load(this.response);
+					console.log(file);
+					document.body.innerHTML += display({swf:file});
+					
+					for(let i = 0; i != file.tags.length; i++){
+						document.getElementById('stats').innerHTML += "	Length: " + file.tags[i].header.length + "<br>";
+						document.getElementById('stats').innerHTML += "	Long: " + file.tags[i].header.long + "<br><br>";
+					}
+				}	
+			}
+			swfReq.open('GET', 'test.swf', true);
+			swfReq.send();
+			let man = new XMLHttpRequest();
+			man.onload = function(){
+				window.manifest = JSON.parse(this.response);
+			}
+			man.open('GET', 'tagManifest.json', false);
+			man.send();
+		</script>
+	</body>
+</html>

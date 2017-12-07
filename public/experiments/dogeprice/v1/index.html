@@ -1,0 +1,60 @@
+<html>
+	<head>
+		<script src = "./shapeshift.js"></script>
+	</head>
+	<body>
+		<div align="center">
+			<textarea id = "in" style="width:50%;height:50%;">Doge here</textarea>
+			<br>
+			<button onclick="usd()" style="width:50%;height:50%;">many many usd</button>
+		</div>
+		
+		<script>
+			function usd(){
+				if(!doge || !btc){
+					document.getElementById("in").value = 'ERROR STILL SETTING UP MULTIPLIERS';
+					return false;
+				}
+				var input = document.getElementById("in").value || 0;
+				
+				var base = Number(input);
+				if(Number.isNaN(base)){
+					if(input.substr(0,1) == '$'){ 
+						
+						base = Number(input.substr(1, input.length));
+						console.log(base);
+					}else{
+						document.getElementById("in").value = 'ERROR PARSING INPUT';
+						return false;
+					}
+				}
+				
+				document.getElementById("in").value = '$' + (base * doge * btc);	
+			}	
+			var doge = null;
+			var btc = null;
+			
+  			var shape = new XMLHttpRequest();
+  			shape.onreadystatechange = function() {
+    				if (this.readyState == 4 && this.status == 200) {
+					var out = JSON.parse(this.responseText)
+     					console.log(out);
+					doge = Number(out.rate);
+				}
+  			};
+  			shape.open("GET", "https://shapeshift.io/rate/doge_btc", true);
+  			shape.send();
+			
+			var manymanyusd = new XMLHttpRequest();
+  			manymanyusd.onreadystatechange = function() {
+    				if (this.readyState == 4 && this.status == 200) {
+					var out = JSON.parse(this.responseText);
+     					console.log(out);
+					btc = Number(out.bpi.USD.rate_float);
+				}
+  			};
+  			manymanyusd.open("GET", "http://api.coindesk.com/v1/bpi/currentprice/usd.json?cors=true", true);
+  			manymanyusd.send();
+		</script>
+	</body>
+</html>
