@@ -1,12 +1,13 @@
 class codeFinder{
-	constructor(){
+	constructor(opts){
+		opts = opts || {};
 		this.tries = 0;
 		this.code = -1; 
-		this.pause = false;
-		this.pauseOnCode = false;//true;
+		this.pause = opts.pause || false;
+		this.pauseOnCode = opts.pauseOnCode || false;//true;
 		this.sockets = [];
 		this.connections = 0;
-		this.maxConnections = 40;
+		this.maxConnections = opts.maxConnections || 40;
 		this.socketCFG = {
 			"force new connection" : true, 
 			"reconnectionAttempts": "Infinity", 
@@ -74,11 +75,16 @@ class codeFinder{
 		} 
 		return data;
 	}
+	getCurrentCode(){
+		return this.code;
+	}
 	restartAllSockets(){
 		for(var i = 0; i != this.sockets.length; i++){
 			this.startTry(this.sockets[i]);
-			console.log('a');
 		}
+	}
+	isPaused(){
+		return this.pause;
 	}
 	oncode(){}
 	onconnection(){}
