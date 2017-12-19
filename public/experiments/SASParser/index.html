@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<title>SASParser</title>
+		<script src="SASParser.js"></script>
+	</head>
+	<body>
+		<p id="output"></p>
+		<script>
+			let parse = new SASParser();
+			parse.onHeader = console.log;
+			fetch('games/pong.swf').then(function(response){
+				return response.arrayBuffer();
+			}).then(function(buffer){
+				parse.parse(buffer);
+			});
+		</script>
+	</body>
+</html>
