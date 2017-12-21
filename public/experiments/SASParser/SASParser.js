@@ -12,9 +12,11 @@ class SASParser{
 				let magic = '';
 				let compression = 'NONE';
 				let version = buffer[3 + offset];
+				
 				for(let i = 0; i != 3; i++){
-					magic += String.fromCharCode(buffer[i + offset])
+					magic += String.fromCharCode(buffer[i + offset]);
 				}
+				
 				switch(magic){
 					case 'CWS': {
 						compression = 'ZLIB';
@@ -25,11 +27,26 @@ class SASParser{
 					}
 				}
 				
+				let decompressedSize = this.Uint32(buffer, offset + 4);
+				
 				return {
-					magic, 
-					compression,
-					version
+					magic, //3 bytes, i = 0
+					compression, //Sugar
+					version, //1 bytes , i = 3
+					decompressedSize // i = 4
 				}
+			},
+			rect: function(buffer, offset){
+				
+			},
+			Uint32: function(buffer, offset){
+				let int = 0;
+				for(let i = 0; i != 4; i++){
+					int += (buffer[(4-i) + offset] >> i);
+				}
+				console.log(int);
+				console.log(new Uint32Array(buffer.buffer.slice(4, 8))[0]);
+				return int;
 			}
 		}
 	}
@@ -41,12 +58,25 @@ class SASParser{
 			throw "Buffer must be a valid arraybuffer";
 		}
 		let rawBuffer = new Uint8Array(buffer);
-		let library = SASParser.library;
+		let library = this.constructor.library;
 		this.startFile();
 		
 		console.log(rawBuffer);
 		let header = library.header(rawBuffer, 0);
 		this.onHeader(header);
+
+		
+		switch(header.compression){
+			case 'ZLIB': {
+				//pako needed
+				buffer = pako.inflate(rawBuffer.buffer.slice(8));
+				console.log(buffer);
+				break;
+			}
+			case 'NONE': {
+				buffer = new Uint8Array(rawBuffer.buffer.slice(8));
+			}
+		}
 		
 		this.endFile();
 	}
@@ -68,7 +98,7 @@ class SASParser{
 		//Raw buffer
 	}
 	//when the header
-	onHeader(){
+	onHeader(head){
 		
 	}
 }
