@@ -42,10 +42,8 @@ class SASParser{
 			Uint32: function(buffer, offset){
 				let int = 0;
 				for(let i = 0; i != 4; i++){
-					int += (buffer[(4-i) + offset] >> i);
+					int += (buffer[(i + offset)] << (i*8));
 				}
-				console.log(int);
-				console.log(new Uint32Array(buffer.buffer.slice(4, 8))[0]);
 				return int;
 			}
 		}
