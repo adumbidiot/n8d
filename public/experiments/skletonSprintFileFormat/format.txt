@@ -1,0 +1,30 @@
+Skeleton Sprint File Format
+
+HEADER{
+	SIGNATURE uint32
+	VERSION uint32
+	STORAGE uint32
+} //Constant size...
+DEFS{
+	SIZE uint32 //size of def section, much larger than it should be
+	BYTE SIZE, BYTE OP, BYTE DATA 	
+}
+BODY{
+	BYTE SIZE, BYTE BLOCK, BYTE DATA
+}
+
+Types:
+
+uint8{
+	BYTE
+}
+uint32{
+	BYTE
+	BYTE
+	BYTE
+	BYTE
+}
+STRING{
+	uint8 SIZE
+	uint8[SIZE] DATA
+}
