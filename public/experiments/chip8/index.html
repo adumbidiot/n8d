@@ -16,6 +16,7 @@
 		<script type="module">
 			import {CHIP8, runChip} from './js/CHIP8.js';
 			let a = new CHIP8();
+			let canvas = document.getElementById('canvas');
 			a.load('ibm.c8', runChip(a, canvas));
 		</script>
 	</body>
