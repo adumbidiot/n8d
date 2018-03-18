@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<style>
+			#canvas{
+				width:450px; 
+				image-rendering: pixelated;
+			}
+		</style>
+		<title>CHIP 8</title>
+		<script type="module" src="js/CHIP8.js"></script>
+	</head>
+	<body>
+		<canvas id="canvas" width = "64" height = "32"></canvas>
+		<h3>Notes:</h3>
+		<p>Very WIP, missing quite a few opcodes, works only with the IBM logo</p>
+		<script type="module">
+			import {CHIP8, runChip} from './js/CHIP8.js';
+			let a = new CHIP8();
+			a.load('ibm.c8', runChip(a, canvas));
+		</script>
+	</body>
+</html>
