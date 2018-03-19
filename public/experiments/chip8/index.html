@@ -15,9 +15,12 @@
 		<p>Very WIP, missing quite a few opcodes, works only with the IBM logo</p>
 		<script type="module">
 			import {CHIP8, runChip} from './js/CHIP8.js';
-			let a = new CHIP8();
+			window.a = new CHIP8();
+			
 			let canvas = document.getElementById('canvas');
+			//window.runCHip = runChip;
 			a.load('ibm.c8', runChip(a, canvas));
+			console.log(a);
 		</script>
 	</body>
 </html>

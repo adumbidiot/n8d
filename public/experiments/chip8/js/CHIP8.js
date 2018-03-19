@@ -1,3 +1,4 @@
+//V 0.0.1a
 export class CHIP8{
 	static get fontset(){
 		return [
@@ -25,6 +26,7 @@ export class CHIP8{
 		this.key = new Uint8Array(16);
 		this.V = new Uint8Array(16);
 		this.memory = new Uint8Array(4096);
+		this.init();
 	}
 	init(){
 		this.pc = 0x200;
@@ -52,6 +54,7 @@ export class CHIP8{
 	}
 	load(path, cb){
 		this.init();
+		console.log(this);
 		let self = this;
 		let req = new XMLHttpRequest();
 		req.open("GET", path);
@@ -192,8 +195,11 @@ export class CHIP8{
 
 //Utils
 export function runChip(chip, canvas){
-	return (function(){
+	return function(){
+		let fps = 60;
 		let ctx = canvas.getContext('2d');
+		console.log(chip.memory);
+		console.log(chip);
 		setInterval(function(){
 			for(let i = 0; i != 10; i++){
 				chip.cycle();
@@ -213,8 +219,8 @@ export function runChip(chip, canvas){
 				}
 			}
 			chip.drawFlag = false;
-		}, 1000/60);
-	})();
+		}, 1000/fps);
+	};
 }
 			
 export function hasTrue(a){
