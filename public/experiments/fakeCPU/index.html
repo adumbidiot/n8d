@@ -1,0 +1,108 @@
+<html>
+	<body>
+		<script>
+			class CPU {
+				constructor(memory, pg){
+					this.pg = pg;
+					this.pc = 0;
+					this.memory = memory;
+				}
+				cycle(){
+					this.execute(this.pg[this.pc]);
+				}
+				execute(ins){
+					switch(ins){
+						case 0x00:
+							//Unreachable
+							throw("UNREACHABLE REACHED AT " + this.pc);
+							break;
+						case 0x01:
+							//ADD {DEST }{TARGET} 
+							this.memory[this.pg[this.pc+1]] += this.memory[this.pc+2];
+							this.pc += 3;
+							break;
+						case 0x02:
+							//INC {Target}{NUM}
+							this.memory[this.pg[this.pc+1]] += this.pg[this.pc + 2];
+							this.pc += 3;
+							break;
+						case 0x03:
+							//SUB {Target} {NUM}
+							this.memory[this.pg[this.pc+1]] -= this.pg[this.pc + 2];
+							this.pc += 3;
+							break;
+						case 0x04:
+							//JMP {TARGET}{IGNORED}
+							this.pc = this.pg[this.pc + 1];
+							break;
+						case 0x05:
+							//LOG {START}{END}
+								let data = '';
+								for(let i = this.pg[this.pc + 1]; i != this.pg[this.pc + 2]; i++){
+									data += String.fromCharCode(this.memory[i]);
+								}
+								console.log(data);
+								this.pc += 3;
+							break;
+						case 0x06:
+							//CMP: {TARGET1}{TARGET2}
+							if(this.memory[this.pg[this.pc + 2]] == this.memory[this.pg[this.pc + 1]]){
+								this.pc += 3;
+							}
+							this.pc +=3;
+							
+							break;
+						default:
+							console.error("UNKNOWN INSTRUCTION: " + ins);
+					}
+				}
+			}
+			
+			class PC {
+				constructor(pg){
+					this.pg = pg;
+					this.memory = new Uint8Array(128);
+					this.cpu = new CPU(this.memory, this.pg);
+				}
+				cycle(){
+					this.cpu.cycle();
+				}
+			}
+			
+			let a_pg = new Uint8Array(128);
+			a_pg[0] = 0x02;
+			a_pg[1] = 0x07;
+			a_pg[2] = 0x29;
+			
+			
+			a_pg[3] = 0x02;
+			a_pg[4] = 0X00;
+			a_pg[5] = 0x01;
+			
+			
+			a_pg[6] = 0x06;
+			a_pg[7] = 0x07;
+			a_pg[8] = 0x00;
+			
+			
+			a_pg[9] = 0x04;
+			a_pg[10] = 0x03;
+			a_pg[11] = 0x00;
+			
+			
+			a_pg[12] = 0x05;
+			a_pg[13] = 0x00;
+			a_pg[14] = 0x07;
+			
+			//a_pg[0] = 0x00;
+			
+			
+			let a = new PC(a_pg);
+			//console.log(a_pg);
+			for(let i = 0; i != 900; i++){
+				a.cycle();
+			}
+			//console.log(a);
+		</script>
+	</body>
+</html>
