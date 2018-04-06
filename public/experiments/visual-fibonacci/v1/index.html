@@ -1,0 +1,36 @@
+<html>
+	<body>
+		<canvas width = "1920" height = "1080" id="canvas" style="width: 800px; height:450px;"></canvas>
+		<script>
+			function genFib(n){
+				let data = [];
+				data[0] = 0;
+				if(n <= 1) return data;
+				data[1] = 1;
+				if(n <= 2) return data;
+				n -= 2;
+				for(let i = 2; i < n + 2; i++){
+					data.push(data[i - 1] + data[i - 2]);
+				}
+				return data;
+			}
+			function drawFib(ctx, data){
+				ctx.fillStyle = "black";
+				for(let i = 0; i != data.length; i++){
+					let num = data[i].toString(2);
+					for(let j = 0; j != num.length; j++){
+						if(num[num.length - 1 - j] == 1){
+							ctx.fillRect(j * 10, i * 10,10,10);
+						}
+					}
+				}
+			}
+			let canvas = document.getElementById('canvas');
+			let ctx = canvas.getContext('2d');
+			
+			let arr = genFib(75);
+			console.log(arr);
+			drawFib(ctx, arr);
+		</script>
+	</body>
+</html>

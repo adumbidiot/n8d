@@ -1,0 +1,54 @@
+<html>
+	<head>	
+		<script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
+		<script src="js/fibonacci-visual-core.js"></script>
+		<title>Visual Fibonacci</title>
+		<style>
+			#canvas{
+				image-rendering: pixelated;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="main-container" style="border: 5px solid black; border-radius: 20px; width: 50%; text-align: center; background-color: grey">
+			<canvas width = "6400" height="6400" id="canvas" style="width: 400; height: 400"></canvas>
+		</div>
+		<div id="control" style="border: 5px solid black; border-radius: 20px; width: 50%; text-align: center">
+			<button id="calc-button" onclick="draw()">Calculate Sequence to <input type="text" autocomplete="off" pattern="\d*" value="21" id="n-input"></input></button>
+		</div>
+		<script>
+			function drawFib(canvas, array){
+				let ctx = canvas.getContext('2d');
+				ctx.fillStyle = 'white';
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				ctx.fillStyle = "black";
+				for(let  i = 0; i != array.length; i++){
+					let data = array[i].toArray(2).value;
+					for(let j = 0; j != data.length; j++){
+						if(data[data.length - 1 - j] === 1){
+							ctx.fillRect(j * 10,i * 10, 10, 10);
+						}
+						
+					}
+				}
+				//return canvas;
+			}
+			let fibonacci = new fibonacciVisualCore();
+			let sequence = null;
+			function draw(){
+				let canvas = document.getElementById('canvas');
+				let n = document.getElementById('n-input').value;
+				let ctx = canvas.getContext('2d');
+				
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				canvas.height = n * 10;
+				canvas.width = n * 10;
+				sequence = fibonacci.calc(n).getSequence();
+				drawFib(canvas, sequence); //Takes too long, make async?
+			}
+			setTimeout(function(){
+				draw();
+			}, 500);
+		</script>
+	</body>
+</html>
