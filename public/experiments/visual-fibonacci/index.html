@@ -17,6 +17,9 @@
 		<div id="control" style="border: 5px solid black; border-radius: 20px; width: 50%; text-align: center">
 			<button id="calc-button" onclick="visual.produceImage()">Calculate Sequence to <input type="text" autocomplete="off" pattern="\d*" value="21" id="n-input"></input></button>
 		</div>
+		<p>
+			<a href = "https://stackoverflow.com/questions/6081483/maximum-size-of-a-canvas-element">Max Canvas Size</a>
+		</p>
 		<script>			
 			let visual = new fibonacciVisual({canvasID: 'canvas'});
 			visual.setNFunc(function(){

@@ -11,6 +11,7 @@ class fibonacciVisual{
 		this.ctx = this.canvas.getContext('2d');
 		this.drawData = [];
 		this.fibonacci = new fibonacciVisualCore();
+		this.bitWidth = 1;
 	}
 	setN(n){
 			this.nFunc = function(){
@@ -32,7 +33,7 @@ class fibonacciVisual{
 			let data = this.drawData[i].toArray(2).value;
 			for(let j = 0; j != data.length; j++){
 				if(data[data.length - 1 - j] === 1){
-					this.ctx.fillRect(j * 10,i * 10, 10, 10);
+					this.ctx.fillRect(j * this.bitWidth,i * this.bitWidth, this.bitWidth, this.bitWidth);
 				}		
 			}
 		}
@@ -49,8 +50,8 @@ class fibonacciVisual{
 	}
 	resize(){
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		canvas.height = this.n * 10;
-		canvas.width = this.n * 10;
+		canvas.height = this.n * this.bitWidth;
+		canvas.width = this.n * this.bitWidth;
 		return this;
 	}
 	produceImage(){
