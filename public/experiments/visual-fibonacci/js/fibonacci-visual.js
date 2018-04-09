@@ -11,7 +11,9 @@ class fibonacciVisual{
 		this.ctx = this.canvas.getContext('2d');
 		this.drawData = [];
 		this.fibonacci = new fibonacciVisualCore();
-		this.bitWidth = 1;
+		this.bitWidth = opts.bitWidth || 1;
+		this.onColor = opts.onColor || 'black';
+		this.offColor = opts.offColor || 'white';
 	}
 	setN(n){
 			this.nFunc = function(){
@@ -28,7 +30,7 @@ class fibonacciVisual{
 	}
 	draw(){
 		this.resize().clear();
-		this.ctx.fillStyle = "black";
+		this.ctx.fillStyle = this.onColor;
 		for(let  i = 0; i != this.drawData.length; i++){
 			let data = this.drawData[i].toArray(2).value;
 			for(let j = 0; j != data.length; j++){
@@ -40,7 +42,7 @@ class fibonacciVisual{
 		return this;
 	}
 	clear(){
-		this.ctx.fillStyle = 'white';
+		this.ctx.fillStyle = this.offColor;
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 		return this;
 	}
@@ -56,5 +58,16 @@ class fibonacciVisual{
 	}
 	produceImage(){
 		this.calc().draw();
+	}
+	updateOnColor(color, redraw){
+		this.onColor = color;
+		if(redraw) this.draw();
+	}
+	updateOffColor(color, redraw){
+		this.offColor = color;
+		if(redraw) this.draw();
+	}
+	getDataURL(){
+		 return this.canvas.toDataURL('image/png');
 	}
 }

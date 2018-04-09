@@ -1,6 +1,8 @@
 <html>
 	<head>	
 		<script src="/scripts/BigInteger.min.js"></script>
+		<script src="/scripts/jscolor.min.js"></script>
+		<script src="/scripts/download.min.js"></script>
 		<script src="js/fibonacci-visual-core.js"></script>
 		<script src="js/fibonacci-visual.js"></script>
 		<title>Visual Fibonacci</title>
@@ -16,10 +18,24 @@
 		</div>
 		<div id="control" style="border: 5px solid black; border-radius: 20px; width: 50%; text-align: center">
 			<button id="calc-button" onclick="visual.produceImage()">Calculate Sequence to <input type="text" autocomplete="off" pattern="\d*" value="21" id="n-input"></input></button>
+			<button onclick="download(visual.getDataURL(), 'fib.png', 'image/png');">Download</button>
+			<div>
+				<p>
+					On Color: #<input class="jscolor" value="000000" onchange="visual.updateOnColor('#' + this.jscolor, true)">
+				</p>
+				<p>
+					Off Color: #<input class="jscolor" value="FFFFFF" onchange="visual.updateOffColor('#' + this.jscolor, true)">
+				</p>
+			</div>
 		</div>
-		<p>
-			<a href = "https://stackoverflow.com/questions/6081483/maximum-size-of-a-canvas-element">Max Canvas Size</a>
-		</p>
+		<div>
+			<p>
+				<a href = "https://stackoverflow.com/questions/6081483/maximum-size-of-a-canvas-element">Max Canvas Size</a>
+			</p>
+			<p>
+				<a href = "http://jscolor.com">Color Picker</a>
+			</p>
+		</div>
 		<script>			
 			let visual = new fibonacciVisual({canvasID: 'canvas'});
 			visual.setNFunc(function(){
