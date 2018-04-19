@@ -34,9 +34,15 @@ SASParser.lib['Header'] = class extends SASParser.Parsable {
 			this.height = sizeRect.yMax / 20;
 					
 			this.size = sizeRect.size; //new buffer overwrites old, old siezes dont matter
-			offset = this.size + 1;
+			offset = this.size;
 			
 			this.frameRate = new SASParser.lib['Fixed8']().parse(this.buffer, offset);
+			offset += this.frameRate.size;
+			this.size += offset;
+			
+			this.frameCount = new SASParser.lib['Uint16']().parse(this.buffer, offset);
+			offset += this.frameCount.size;
+			this.size += offset;
 			
 			/*return {
 				magic, //3 bytes, i = 0
@@ -45,8 +51,6 @@ SASParser.lib['Header'] = class extends SASParser.Parsable {
 				decompressedSize, // i = 4
 				size
 			}*/
-			
-			
 			return this;
 		}
 }

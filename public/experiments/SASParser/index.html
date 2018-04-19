@@ -6,14 +6,17 @@
 		<script src="js/SASParser/Parseable.js"></script>
 		<script src="js/SASParser/lib/Rect.js"></script>
 		<script src="js/SASParser/lib/Fixed8.js"></script>
+		<script src="js/SASParser/lib/Uint16.js"></script>
 		<script src="js/SASParser/lib/Uint32.js"></script>
 		<script src="js/SASParser/lib/Header.js"></script>
+		<script src="js/SASParser/lib/RecordHeader.js"></script>
 	</head>
 	<body>
 		<p id="output"></p>
 		<script>
 			let parse = new SASParser();
-			parse.onHeader = console.log;
+			parse.onheader = console.log;
+
 			fetch('games/pong.swf').then(function(response){
 				return response.arrayBuffer();
 			}).then(function(buffer){
