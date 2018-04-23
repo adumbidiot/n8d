@@ -13,9 +13,12 @@
 	</head>
 	<body>
 		<p id="output"></p>
+		<p>http://www-lehre.informatik.uni-osnabrueck.de/~fbstark/diplom/docs/swf/Intro.htm</p>
 		<script>
 			let parse = new SASParser();
 			parse.onheader = console.log;
+			parse.onunknowntag = console.log;
+			parse.onfileend = console.log;
 
 			fetch('games/pong.swf').then(function(response){
 				return response.arrayBuffer();

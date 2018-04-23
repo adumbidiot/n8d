@@ -3,12 +3,12 @@ SASParser.lib['RecordHeader'] = class extends SASParser.Parsable {
 		super();
 	}
 	parse(buffer, offset){
-		let uint = new SASParser.lib['Uint16'](buffer, offset);
+		let uint = new SASParser.lib['Uint16']().parse(buffer, offset).value;
 		let size = 2;
 		let length = uint & (0x3F);
 		let long = (length < 0x3F) ? false : true;
 		if(long){
-			length = this.parseUint32(index + 2);
+			length = new SASParser.lib['Uint16']().parse(buffer, offset + 2).value;
 			size += 4;
 		}
 		

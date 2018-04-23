@@ -12,11 +12,20 @@ const SASParser = class {
 		index += header.size;
 		this.onheader(header);
 		//Header done
-		for(let i = 0; i != 1; i++){
+		let i = 0;
+		for(i = 0; i != 500; i++){
 			let tag = new SASParser.lib['RecordHeader']().parse(buffer, index);
-			console.log(tag);
+			if(SASParser.lib[tag.code]){
+				
+			}else{
+				this.onunknowntag(tag, buffer.slice(index + tag.size, index + tag.size + tag.length));
+			}
+			if(tag.code === 0){
+				break;
+			}
+			index += tag.size + tag.length;
 		}
-		
+		this.onfileend(i);
 	}
 	//Abstract
 	onfilestart(){
@@ -24,6 +33,14 @@ const SASParser = class {
 	}
 	
 	onheader(){
+		
+	}
+	
+	onunknowntag(){
+		
+	}
+	
+	onfileend(iterations){
 		
 	}
 }
