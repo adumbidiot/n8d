@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<title>AVM</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.6/pako.js"></script>
+		<script src="js/SASParser/SASParser.js"></script>
+		<script src="js/SASParser/Parseable.js"></script>
+		<script src="js/SASParser/lib/Rect.js"></script>
+		<script src="js/SASParser/lib/Fixed8.js"></script>
+		<script src="js/SASParser/lib/Uint16.js"></script>
+		<script src="js/SASParser/lib/Uint32.js"></script>
+		<script src="js/SASParser/lib/String.js"></script>
+		<script src="js/SASParser/lib/Header.js"></script>
+		<script src="js/SASParser/lib/RecordHeader.js"></script>
+		<script src="js/SASParser/lib/tags/Unknown.js"></script>
+		<script src="js/SASParser/lib/tags/DoABC.js"></script>
+	</head>
+	<body>
+		<h2>Ascii Dump</h2>
+		<textarea id="dump" style="width: 100%; height: 50%;"></textarea>
+		<p>https://wwwimages2.adobe.com/content/dam/acom/en/devnet/pdf/avm2overview.pdf</p>
+		<script>
+			let parse = new SASParser();
+			let filename = 'games/pong.swf';
+			parse.ontag = function(tag){
+				console.log(tag);
+				let data = tag.data;
+				for(let i = 0; i != 10; i++){
+					console.log(data[i]);
+				}
+				document.getElementById('dump').innerHTML += dump(data);
+			}
+			fetch(filename).then(function(response){
+				return response.arrayBuffer();
+			}).then(function(buffer){
+				parse.parse(buffer);
+			});
+			function dump(buf){
+				let a = '';
+				for(let i = 0; i != buf.length; i++){
+					a += String.fromCharCode(buf[i]);
+				}
+				return a;
+			}
+		</script>
+	</body>
+</html>

@@ -2,8 +2,10 @@ const SASParser = class {
 	static get VERSION(){
 		return '0.0.1a';
 	}
+	constructor(maxTags){
+		this.maxTags = maxTags || 500;
+	}
 	parse(buf){
-		console.log(buf); //TEMP
 		let buffer = new Uint8Array(buf);
 		this.onfilestart();
 		let index = 0;
@@ -13,17 +15,20 @@ const SASParser = class {
 		this.onheader(header);
 		//Header done
 		let i = 0;
-		for(i = 0; i != 500; i++){
-			let tag = new SASParser.lib['RecordHeader']().parse(buffer, index);
-			if(SASParser.lib[tag.code]){
-				
+		for(i = 0; i != this.maxTags; i++){
+			let rec = new SASParser.lib['RecordHeader']().parse(buffer, index);
+			let tag = null;
+			if(SASParser.lib.tags[rec.code]){
+				tag = new SASParser.lib.tags[rec.code](rec).parse(buffer, index);
+				this.ontag(tag);
 			}else{
-				this.onunknowntag(tag, buffer.slice(index + tag.size, index + tag.size + tag.length));
+				tag = new SASParser.lib.tags[-1](rec).parse(buffer, index + rec.size);
+				this.onunknowntag(tag);
 			}
-			if(tag.code === 0){
+			if(rec.code === 0){
 				break;
 			}
-			index += tag.size + tag.length;
+			index += rec.size + rec.length;
 		}
 		this.onfileend(i);
 	}
@@ -32,11 +37,15 @@ const SASParser = class {
 		
 	}
 	
-	onheader(){
+	onheader(header){
 		
 	}
 	
-	onunknowntag(){
+	ontag(tag){
+		
+	}
+	
+	onunknowntag(tag){
 		
 	}
 	
@@ -46,3 +55,4 @@ const SASParser = class {
 }
 
 SASParser.lib = {};
+SASParser.lib.tags = [];

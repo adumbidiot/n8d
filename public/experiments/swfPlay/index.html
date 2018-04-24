@@ -1,0 +1,48 @@
+<html>
+	<body>
+		<script>
+			/*A html widget and core that is able to fetch and and display a swf file.
+			It should support links and dirs, as long as a manifest.json is present or another json file is specified.
+			*/
+			class swfPlay extends HTMLElement {
+				static is(){
+					return 'swf-play';
+				}
+				static get VERSION(){
+					return '0.0.1';
+				}
+				constructor(){
+					super();
+					this.shadow = this.attachShadow({mode: 'open'});
+					this.home = document.createElement('div');
+					this.home.style.cssText = 'width: 800px; height: 450px; background-color: #777777; text-align: center; user-select: none';
+					
+					let welcome = document.createElement('p');
+					welcome.innerHTML = 'WELCOME!';
+					welcome.style.cssText = 'font-size: 50px; color: #303030; margin: auto; width: 600px; padding-top: 200px; font-weight: 100; user-select: none;';
+					this.home.append(welcome);
+					
+					let loadFromLinkButton = document.createElement('div');
+					loadFromLinkButton.style.cssText = 'background-color: black; width: 75px; height: 100px; position: absolute; left: 375px;';
+					loadFromLinkButton.onmousedown = function(){
+						if(loadFromLinkButton.style.backgroundColor == 'red'){
+							loadFromLinkButton.style.backgroundColor = "black";
+						}else{
+							loadFromLinkButton.style.backgroundColor = "red";
+						}
+					}
+					loadFromLinkButton.innerHTML = 'Press to load from a link';
+					this.home.append(loadFromLinkButton);
+					
+					this.shadow.append(this.home);
+					console.log(this.shadow);
+				}
+				loadFromLink(link){
+					//Http get, verify is swf
+				}
+			}
+			customElements.define(swfPlay.is(), swfPlay);
+		</script>
+		<swf-play></swf-play>
+	</body>
+</html>

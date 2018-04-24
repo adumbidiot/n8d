@@ -8,23 +8,66 @@
 		<script src="js/SASParser/lib/Fixed8.js"></script>
 		<script src="js/SASParser/lib/Uint16.js"></script>
 		<script src="js/SASParser/lib/Uint32.js"></script>
+		<script src="js/SASParser/lib/String.js"></script>
 		<script src="js/SASParser/lib/Header.js"></script>
 		<script src="js/SASParser/lib/RecordHeader.js"></script>
+		<script src="js/SASParser/lib/tags/Unknown.js"></script>
+		<script src="js/SASParser/lib/tags/DoABC.js"></script>
 	</head>
 	<body>
 		<p id="output"></p>
-		<p>http://www-lehre.informatik.uni-osnabrueck.de/~fbstark/diplom/docs/swf/Intro.htm</p>
+		<h2>Ascii Dump</h2>
+		<textarea id="dump" style="width: 100%; height: 50%;"></textarea>
+		<p><a href="http://www-lehre.informatik.uni-osnabrueck.de/~fbstark/diplom/docs/swf/Intro.htm" target="_blank">Good Resource?</a></p>
+		<p>https://wwwimages2.adobe.com/content/dam/acom/en/devnet/pdf/swf-file-format-spec.pdf</p>
+		<p><a href="avm.html" target="_blank">Avm</a></p>
 		<script>
+			let output = document.getElementById('output');
+			let dumpArea = document.getElementById('dump');
+			let filename = 'games/pong.swf';
 			let parse = new SASParser();
-			parse.onheader = console.log;
-			parse.onunknowntag = console.log;
-			parse.onfileend = console.log;
+			let startTime = 0;
+			let endTime = 0;
+			parse.onfilestart = function(){
+				startTime = new Date();
+				output.innerHTML += '<b>Parse file "' + filename + '" starting at ' + startTime.getTime() +'<br>' + startTime + '<b><br>';
+			}
+			parse.onunknowntag = function(tag){
+				output.innerHTML += "Unrecognized Code: " + tag.header.code + '<br>';
+				output.innerHTML += "&nbsp&nbsp&nbsp&nbspSize: " + tag.header.length + "<br>";
+			}
+			parse.ontag = function(tag){
+				output.innerHTML += "Tag: " + tag.type + "<br>";
+				output.innerHTML += "&nbsp&nbsp&nbsp&nbspCode: " + tag.header.code + "<br>";
+				output.innerHTML += "&nbsp&nbsp&nbsp&nbspSize: " + tag.header.length + "<br>";
+				if(tag.header.code === 82){
+					//output.innerHTML += "&nbsp&nbspCode: " + tag.header.code + "<br>";
+					console.log(tag);
+				}
+			}
+			parse.onfileend = function(i){
+				endTime = new Date();
+				output.innerHTML += "<b>Finished parse after " + i + " tags at " + endTime.getTime() + ", taking " + (endTime.getTime() - startTime.getTime()) + "ms<br>" + endTime +"<br></b>";
+			}
+			parse.onheader = function(head){
+				console.log(head);
+				dumpArea.innerHTML += dump(head.buffer);
+			}
+			
 
-			fetch('games/pong.swf').then(function(response){
+			fetch(filename).then(function(response){
 				return response.arrayBuffer();
 			}).then(function(buffer){
 				parse.parse(buffer);
 			});
+			
+			function dump(buf){
+				let a = '';
+				for(let i = 0; i != buf.length; i++){
+					a += String.fromCharCode(buf[i]);
+				}
+				return a;
+			}
 		</script>
 	</body>
 </html>

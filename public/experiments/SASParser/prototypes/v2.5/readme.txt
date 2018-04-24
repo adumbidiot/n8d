@@ -1,0 +1,3 @@
+A false start for v3. It was more object oriented, but single file and clunky to use and extend. While v3 still shares may of the downfalls, the need of a multiple file setup forced me to abandon this test. While abandoned, it forced me to think of alternative paths to manage a complex parser. While this planted the seed of the idea, v3 proved that I needed a module system as I found myself implementing my own clunky one instead of making a module project. This project also helped me understand that an api like java's sax parser was impossible due to compression. Neverthless, the api is mimiced in this version as well as v3
+
+This experiment manages to parse part of the header, but no tags. The index html file ay need repairs.

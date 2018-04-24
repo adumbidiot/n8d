@@ -1,0 +1,54 @@
+<html>
+	<head>
+		<script src="https://cdn.jsdelivr.net/pako/1.0.3/pako.min.js"></script>
+		<script src="swfFile.js"></script>
+	</head>
+	<body>
+		<div id="main">
+		
+		</div>
+		<br>
+		<br>
+		<div id="stats">
+			<h4>Stats: </h4>
+		</div>
+		<br>
+		<br>
+		<div id="dump"></div>
+		<script>
+			var file = new swfFile();
+			var swfReq = new XMLHttpRequest();
+			swfReq.responseType = "arraybuffer";
+			swfReq.onreadystatechange = function(){
+				if(this.readyState == 4 && this.status == 200){
+					file.load(this.response);
+					console.log(file);
+
+					document.getElementById('stats').innerHTML += "Signature: " + file.signature + "<br>";
+					document.getElementById('stats').innerHTML += "Compression: " + file.compression + "<br>";
+					document.getElementById('stats').innerHTML += "Version: " + file.version + "<br>";
+					document.getElementById('stats').innerHTML += "Decompressed Size: " + file.decompressedSize + " bytes<br>";
+					document.getElementById('stats').innerHTML += "Width: " + file.width + " px<br>";
+					document.getElementById('stats').innerHTML += "Height: " + file.height + " px<br>";
+					document.getElementById('stats').innerHTML += "Frame Rate: " + file.frameRate + " fps</br>";
+					document.getElementById('stats').innerHTML += "# of Frames: " + file.frameCount + " frame(s)<br>";
+					document.getElementById('stats').innerHTML += "Tags: <br><br>";
+					for(let i = 0; i != file.tags.length; i++){
+						document.getElementById('stats').innerHTML += (manifest[file.tags[i].header.code] ? manifest[file.tags[i].header.code] : "Unknown") + ":<br>";
+						document.getElementById('stats').innerHTML += "	Code: " + file.tags[i].header.code + "<br>";
+						document.getElementById('stats').innerHTML += "	Length: " + file.tags[i].header.length + "<br>";
+						document.getElementById('stats').innerHTML += "	Long: " + file.tags[i].header.long + "<br><br>";
+					}
+				}	
+			}
+			swfReq.open('GET', 'pong.swf', true);
+			swfReq.send();
+			let man = new XMLHttpRequest();
+			man.onload = function(){
+				window.manifest = JSON.parse(this.response);
+			}
+			man.open('GET', 'tagManifest.json', false);
+			man.send();
+		</script>
+	</body>
+</html>

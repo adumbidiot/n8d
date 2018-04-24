@@ -1,3 +1,0 @@
-A swf parser. It does not recognize tags and does little beyond parsing the header. It is extremely slow but was an important stepping stone for v2. It tries to convert a uint8 array into raw bits and perform operations on that bit array. This proved too slow to be viable and forced a paradigm shift from operations on bits to operations on bytes. 
-
-index.js is the server and index.html is what it serves on 127.0.0.1:80. It was geared for v2, but with a copule changes it clearly shows how it applies to v1. 
