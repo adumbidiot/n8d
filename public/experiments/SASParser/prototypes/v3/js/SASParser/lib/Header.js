@@ -28,7 +28,7 @@ SASParser.lib['Header'] = class extends SASParser.Parsable {
 			}
 				
 			this.rawSize = new SASParser.lib['Uint32']().parse(buffer, offset + 4).value;
-			//use decompressed buffer
+			//use decompressed buffer 
 			let sizeRect = new SASParser.lib['Rect']().parse(this.buffer, 0);
 			this.width = sizeRect.xMax / 20;
 			this.height = sizeRect.yMax / 20;
