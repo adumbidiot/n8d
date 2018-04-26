@@ -1,19 +1,20 @@
 import {Parsable} from './Parsable.js';
 import * as Library from '../Library.js';
-import {Uint32} from './Uint32.js';
-import {Rect} from './Rect.js'
 import pako from 'pako';
 
 export class Header extends Parsable{
 	static get name(){
 		return 'header';
 	}
+	
 	static get size(){
-		return -1;
+		return 0;
 	}
+	
 	constructor(){
 		super();
 	}
+	
 	parse(buffer, offset){
 		this.magic = '';
 		this.compression = 'NONE';
@@ -35,12 +36,21 @@ export class Header extends Parsable{
 			}
 		}
 		
-		this.rawSize = Library.get(Uint32.name).parse(buffer, offset + 4);
+		this.rawSize = Library.get('uint32').parse(buffer, offset + 4);
 		//use decompressed buffer
-		let sizeRect = Library.get(Rect.name).parse(this.buffer, 0);
+		let sizeRect = Library.get('rect').parse(this.buffer, 0);
 		this.width = sizeRect.xMax / 20;
 		this.height = sizeRect.yMax / 20;
+		this.size = sizeRect.size;
+		offset = this.size;
 		
+		this.frameRate = Library.get('fixed8').parse(this.buffer, offset);
+		offset += this.frameRate.size;
+		
+		this.frameCount = Library.get('uint16').parse(this.buffer, offset);
+		offset += this.frameCount.size;
+		this.size = offset;
+
 		return this;
 	}
 }

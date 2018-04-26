@@ -28,6 +28,7 @@
 			let parse = new SASParser();
 			let startTime = 0;
 			let endTime = 0;
+			let offset = 0;
 			parse.onfilestart = function(){
 				startTime = new Date();
 				output.innerHTML += '<b>Parse file "' + filename + '" starting at ' + startTime.getTime() +'<br>' + startTime + '<b><br>';
@@ -35,11 +36,15 @@
 			parse.onunknowntag = function(tag){
 				output.innerHTML += "Unrecognized Code: " + tag.header.code + '<br>';
 				output.innerHTML += "&nbsp&nbsp&nbsp&nbspSize: " + tag.header.length + "<br>";
+				output.innerHTML += "&nbsp&nbsp&nbsp&nbspRaw Uint16: " + tag.header._uint16 + "<br>";
+				output.innerHTML += "&nbsp&nbsp&nbsp&nbspRaw Offset: " + offset + "<br>";
+				offset += tag.size;
 			}
 			parse.ontag = function(tag){
 				output.innerHTML += "Tag: " + tag.type + "<br>";
 				output.innerHTML += "&nbsp&nbsp&nbsp&nbspCode: " + tag.header.code + "<br>";
 				output.innerHTML += "&nbsp&nbsp&nbsp&nbspSize: " + tag.header.length + "<br>";
+				
 				if(tag.header.code === 82){
 					//output.innerHTML += "&nbsp&nbspCode: " + tag.header.code + "<br>";
 					console.log(tag);
@@ -52,6 +57,7 @@
 			parse.onheader = function(head){
 				console.log(head);
 				dumpArea.innerHTML += dump(head.buffer);
+				offset += head.size;
 			}
 			
 

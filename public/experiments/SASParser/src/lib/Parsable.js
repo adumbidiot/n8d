@@ -1,10 +1,11 @@
 export class Parsable {
 	static get size(){
 		throw "Method size from parsable object must be implemented!";
-		//Return -1 if size is dynamic
+		//Return 0 if size is dynamic
 	}
 	constructor(){
-		this.size = 0;
+		this.size = this.constructor.size;
+		this.constructor.name;// Trigger error if not implemented
 		//Size set to CLASSNAME.size or 0 if dynamic;
 	}
 	parse(buffer, index){

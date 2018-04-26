@@ -7,35 +7,100 @@
 	pako = pako && pako.hasOwnProperty('default') ? pako['default'] : pako;
 
 	let components = {};
+	let tagComponents = [];
 
 	function define(str, classPrototype){
-		components[str] = classPrototype;
+		components[str.toLowerCase()] = classPrototype;
 	}
 
 	function get(str){
+		str = str.toLowerCase();
 		if(!components[str]){
 			return null;
 		}
 		return new components[str]();
 	}
 
-	function getLibrary(){
-		return components;
+	function defineTag(id, classPrototype){
+		tagComponents[id] = classPrototype;
+	}
+
+	function getTag(recordHeader){
+		if(!tagComponents[recordHeader.code]){
+			return new tagComponents[-1](recordHeader);
+		}
+		return new tagComponents[recordHeader.code](recordHeader);
 	}
 
 	class Parsable {
 		static get size(){
 			throw "Method size from parsable object must be implemented!";
-			//Return -1 if size is dynamic
+			//Return 0 if size is dynamic
 		}
 		constructor(){
-			this.size = 0;
+			this.size = this.constructor.size;
+			this.constructor.name;// Trigger error if not implemented
 			//Size set to CLASSNAME.size or 0 if dynamic;
 		}
 		parse(buffer, index){
 			throw "Method Parse from parsable object must be implemented!";
 		}
 	}
+
+	class Header extends Parsable{
+		static get name(){
+			return 'header';
+		}
+		
+		static get size(){
+			return 0;
+		}
+		
+		constructor(){
+			super();
+		}
+		
+		parse(buffer, offset){
+			this.magic = '';
+			this.compression = 'NONE';
+			this.version = buffer[offset + 3];
+			
+			for(let i = 0; i != 3; i++){
+				this.magic += String.fromCharCode(buffer[i + offset]);
+			}
+			
+			switch(this.magic){
+				case 'CWS': {
+					this.compression = "ZLIB"; //SWF 6 later
+					let compressedBuffer = new Uint8Array(buffer.buffer.slice(8));
+					this.buffer = pako.inflate(compressedBuffer);
+					break;
+				}
+				default: {
+					throw "Unrecognized Magic Number (" + this.magic + ")!";
+				}
+			}
+			
+			this.rawSize = get('uint32').parse(buffer, offset + 4);
+			//use decompressed buffer
+			let sizeRect = get('rect').parse(this.buffer, 0);
+			this.width = sizeRect.xMax / 20;
+			this.height = sizeRect.yMax / 20;
+			this.size = sizeRect.size;
+			offset = this.size;
+			
+			this.frameRate = get('fixed8').parse(this.buffer, offset);
+			offset += this.frameRate.size;
+			
+			this.frameCount = get('uint16').parse(this.buffer, offset);
+			offset += this.frameCount.size;
+			this.size = offset;
+
+			return this;
+		}
+	}
+
+	define(Header.name, Header);
 
 	class Uint32 extends Parsable{
 		static get size(){
@@ -58,6 +123,27 @@
 	}
 
 	define(Uint32.name, Uint32);
+
+	class Uint16 extends Parsable{
+		static get size(){
+			return 2;
+		}
+		static get name(){
+			return 'uint16';
+		}
+		constructor(){
+			super();
+			this.value = 0;
+		}
+		parse(buffer, offset){
+			for(let i = 0; i != this.size; i++){
+				this.value += (buffer[(i + offset)] << (i * 8));
+			}
+			return this;
+		}
+	}
+
+	define(Uint16.name, Uint16);
 
 	class Rect extends Parsable {
 		static get size(){
@@ -122,70 +208,121 @@
 
 	define(Rect.name, Rect);
 
-	class Header extends Parsable{
-		static get name(){
-			return 'header';
-		}
+	class Fixed8 extends Parsable{
 		static get size(){
-			return -1;
+			return 2;
+		}
+		static get name(){
+			return 'fixed8';
+		}
+		constructor(){
+			super();
+			this.value = 0;
+		}
+		parse(buffer, offset){
+			let first = buffer[offset];
+			this.value += buffer[offset + 1];
+			return this; //Incomplete? Stolen from v1
+		}
+	}
+
+	define(Fixed8.name, Fixed8);
+
+	class RecordHeader extends Parsable {
+		static get size(){
+			return 0;
 		}
 		constructor(){
 			super();
 		}
 		parse(buffer, offset){
-			this.magic = '';
-			this.compression = 'NONE';
-			this.version = buffer[offset + 3];
-			
-			for(let i = 0; i != 3; i++){
-				this.magic += String.fromCharCode(buffer[i + offset]);
+			this._uint = get('uint16').parse(buffer, offset);
+			this.size += this._uint.size;
+			this.length = this._uint.value & (0x3F);
+			this.long = (this.length < 0x3F) ? false : true;
+			if(this.long){
+				this.length = get('uint16').parse(buffer, offset + this.size).value;
+				this.size += 4;
 			}
-			
-			switch(this.magic){
-				case 'CWS': {
-					this.compression = "ZLIB"; //SWF 6 later
-					let compressedBuffer = new Uint8Array(buffer.buffer.slice(8));
-					this.buffer = pako.inflate(compressedBuffer);
-					break;
-				}
-				default: {
-					throw "Unrecognized Magic Number (" + this.magic + ")!";
-				}
-			}
-			
-			this.rawSize = get(Uint32.name).parse(buffer, offset + 4);
-			//use decompressed buffer
-			let sizeRect = get(Rect.name).parse(this.buffer, 0);
-			this.width = sizeRect.xMax / 20;
-			this.height = sizeRect.yMax / 20;
-			
+			this.code = this._uint.value >> 6;
+			return this;
+		}
+	}
+	define(RecordHeader.name, RecordHeader);
+
+	class Tag extends Parsable{
+		static get code(){
+			throw "Static method code must be implemented";
+		}
+		static get size(){
+			return 0;
+		}
+		constructor(recordHeader){
+			super();
+			this.recordHeader = recordHeader;
+			this.name = this.constructor.name;
+		}
+	}
+
+	class UnknownTag extends Tag{
+		static get code(){
+			return -1;
+		}
+		constructor(recordHeader){
+			super(recordHeader);
+		}
+		parse(buffer, offset){
+			this.size = this.recordHeader.length + this.recordHeader.size;
+			this.data = buffer.slice(offset + this.recordHeader.size, offset + this.size);
 			return this;
 		}
 	}
 
-	define(Header.name, Header);
+	defineTag(UnknownTag.code, UnknownTag);
 
-	class SWFParser{
+	class SWFParser {
 		static get VERSION(){
 			return '0.0.1';
 		}
+		
 		constructor(maxTags){
 			this.maxTags = maxTags || 500;
-		}
-		parse(arrayBuffer){
-			let buffer = new Uint8Array(arrayBuffer);
-			this.onfilestart();
-			let index = 0;
-			let header = get(Header.name).parse(buffer, index);
-			this.onheader(header); 
-		}
-		//Abstract
-		onfilestart(){
-			
+			this.eventMap = {};
 		}
 		
-		onheader(){
+		parse(arrayBuffer){
+			let buffer = new Uint8Array(arrayBuffer);
+			this.emit('start');
+			let header = get('header').parse(buffer, 0);
+			this.emit('header', header);
+			buffer = header.buffer;
+			let index = header.size;
 			
+			let i = 0;
+			let recordHeader = null;
+			for(i = 0; i != this.maxTags; i++){
+				recordHeader = get('recordheader').parse(buffer, index);
+				this.emit('tag', getTag(recordHeader).parse(buffer, index));
+				
+				if(recordHeader.code === 0){
+					break;
+				}
+				index += recordHeader.size + recordHeader.length;
+			}
+			this.emit('end', i);
+		}
+		
+		on(str, func){
+			//One event func per str for now...
+			this.eventMap[str] = func;
+		}
+		
+		emit(str, data){
+			if(str === 'start' || str === 'end'){ //Hack for timing
+				this.eventMap[str](data);
+			}else if(this.eventMap[str]){ 
+				setTimeout(this.eventMap[str].bind(this, data), 0);
+			}
 		}
 	}
 
@@ -198,10 +335,10 @@
 				
 	}
 
+	//export {getLibrary} from './Library.js';
 	let VERSION = '0.0.1';
 
 	exports.VERSION = VERSION;
-	exports.getLibrary = getLibrary;
 	exports.SWFParser = SWFParser;
 	exports.fetchAndParse = fetchAndParse;
 

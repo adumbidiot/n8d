@@ -9,19 +9,33 @@
 		<h2>Ascii Dump</h2>
 		<textarea id="dump" style="width: 100%; height: 50%;"></textarea>
 		<p><a href="http://www-lehre.informatik.uni-osnabrueck.de/~fbstark/diplom/docs/swf/Intro.htm" target="_blank">Good Resource?</a></p>
-		<p>https://wwwimages2.adobe.com/content/dam/acom/en/devnet/pdf/swf-file-format-spec.pdf</p>
-		<p><a href="avm.html" target="_blank">Avm</a></p>
+		<p><a href = "https://wwwimages2.adobe.com/content/dam/acom/en/devnet/pdf/swf-file-format-spec.pdf">SWF 19 Spec</a></p>
 		<script>
+			let startTime = null;
+			let endTime = null;
+			let output = document.getElementById('output');
+			
 			console.log('SWFTools Version: ' + SWFTools.VERSION);
 			console.log('SWFParser Version: ' + SWFTools.SWFParser.VERSION);
+			
 			let parser = new SWFTools.SWFParser();
 			SWFTools.fetchAndParse(parser, 'games/pong.swf');
-			parser.onfilestart = function(){
-				console.log('Parse started');
-			}
-			parser.onheader = function(header){
-				console.log(header);
-			}
+			parser.on('start', function(){
+				startTime = new Date();
+				//console.log('Parse started at ' + startTime);
+			});
+			parser.on('header', function(header){
+				//console.log(header);
+			});
+			parser.on('tag', function(tag){
+				//console.log(tag);
+				output.innerHTML += tag.recordHeader.code + '<br>';
+			});
+			parser.on('end', function(i){
+				endTime = new Date();
+				output.innerHTML += '<b>' + i + ' tags parsed in ' + (endTime.getTime() - startTime.getTime()) + ' ms</b><br>';
+			});
+			
 		</script>
 	</body>
 </html>
