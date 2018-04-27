@@ -145,6 +145,26 @@
 
 	define(Uint16.name, Uint16);
 
+	class NulString extends Parsable{
+		static get size(){
+			return 0;
+		}
+		constructor(){
+			super();
+		}
+		parse(buffer, offset){
+			let i = offset;
+			while(buffer[i] != 0){
+				this.value += String.fromCharCode(buffer[i]);
+				i++;
+			}
+			this.size = i - offset;
+			return this;
+		}
+	}
+
+	define(NulString.name, NulString);
+
 	class Rect extends Parsable {
 		static get size(){
 			return -1;
@@ -268,9 +288,6 @@
 		static get code(){
 			return -1;
 		}
-		constructor(recordHeader){
-			super(recordHeader);
-		}
 		parse(buffer, offset){
 			this.size = this.recordHeader.length + this.recordHeader.size;
 			this.data = buffer.slice(offset + this.recordHeader.size, offset + this.size);
@@ -279,6 +296,23 @@
 	}
 
 	defineTag(UnknownTag.code, UnknownTag);
+
+	class DoABCTag extends Tag{
+		static get code(){
+			return 82;
+		}
+		parse(buffer, offset){
+			let start = offset;
+			this.size = this.recordHeader.length + this.recordHeader.size;
+			this.flags = get('uint32').parse(buffer, offset + this.recordHeader.size);
+			this.scriptName = get('nulstring').parse(buffer, offset + this.recordHeader.size + this.flags.size);
+			offset += this.recordHeader.size + this.flags.size + this.name.size;
+			this.data = buffer.slice(offset, start + this.recordHeader.length);
+			return this;
+		}
+	}
+
+	defineTag(DoABCTag.code, DoABCTag);
 
 	class SWFParser {
 		static get VERSION(){
