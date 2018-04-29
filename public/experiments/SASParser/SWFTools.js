@@ -151,6 +151,7 @@
 		}
 		constructor(){
 			super();
+			this.value = '';
 		}
 		parse(buffer, offset){
 			let i = offset;
@@ -261,7 +262,7 @@
 			this.length = this._uint.value & (0x3F);
 			this.long = (this.length < 0x3F) ? false : true;
 			if(this.long){
-				this.length = get('uint16').parse(buffer, offset + this.size).value;
+				this.length = get('uint32').parse(buffer, offset + this.size).value;
 				this.size += 4;
 			}
 			this.code = this._uint.value >> 6;
@@ -269,6 +270,25 @@
 		}
 	}
 	define(RecordHeader.name, RecordHeader);
+
+	class RGB extends Parsable{
+		static get size(){
+			return 3;
+		}
+		constructor(){
+			super();
+		}
+		parse(buffer, offset){
+			this.R = buffer[offset];
+			offset += 1;
+			this.G = buffer[offset];
+			offset += 1;
+			this.B = buffer[offset];
+			return this;
+		}
+	}
+
+	define(RGB.name, RGB);
 
 	class Tag extends Parsable{
 		static get code(){
@@ -281,6 +301,7 @@
 			super();
 			this.recordHeader = recordHeader;
 			this.name = this.constructor.name;
+			this.size = recordHeader.size + recordHeader.length;
 		}
 	}
 
@@ -289,7 +310,6 @@
 			return -1;
 		}
 		parse(buffer, offset){
-			this.size = this.recordHeader.length + this.recordHeader.size;
 			this.data = buffer.slice(offset + this.recordHeader.size, offset + this.size);
 			return this;
 		}
@@ -306,13 +326,172 @@
 			this.size = this.recordHeader.length + this.recordHeader.size;
 			this.flags = get('uint32').parse(buffer, offset + this.recordHeader.size);
 			this.scriptName = get('nulstring').parse(buffer, offset + this.recordHeader.size + this.flags.size);
-			offset += this.recordHeader.size + this.flags.size + this.name.size;
+			offset += this.recordHeader.size + this.flags.size + this.scriptName.size;
 			this.data = buffer.slice(offset, start + this.recordHeader.length);
 			return this;
 		}
 	}
 
 	defineTag(DoABCTag.code, DoABCTag);
+
+	class EndTag extends Tag{
+		static get code(){
+			return 0;
+		}
+		parse(buffer, offset){
+			this.size = this.recordHeader.length + this.recordHeader.size;
+			this.data = buffer.slice(offset + this.recordHeader.size, offset + this.size);
+			return this;
+		}
+	}
+
+	defineTag(EndTag.code, EndTag);
+
+	class FileAttributesTag extends Tag{
+		static get code(){
+			return 69;
+		}
+		parse(buffer, offset){
+			offset += this.recordHeader.size;
+			let uint = buffer[offset];
+			this.reserved1 = this.isBitSet(uint, 7);
+			this.useDirectBlit = this.isBitSet(uint, 6);
+			this.useGPU = this.isBitSet(uint, 5);
+			this.hasMetadata = this.isBitSet(uint, 4);
+			this.actionScript3 = this.isBitSet(uint, 3);
+			this.noCrossDomainCache = this.isBitSet(uint, 2);
+			this.reserved2 = this.isBitSet(uint, 1);
+			this.useNetwork = this.isBitSet(uint, 0);
+			//Next 3 bytes reserved
+			return this;
+		}
+		isBitSet(uint, offset){
+			return (uint & (1 << offset))> 0;
+		}
+	}
+
+	defineTag(FileAttributesTag.code, FileAttributesTag);
+
+	class MetadataTag extends Tag{
+		static get code(){
+			return 77;
+		}
+		parse(buffer, offset){
+			this.Metadata = get('nulstring').parse(buffer, offset + this.recordHeader.size);
+			return this;
+		}
+	}
+
+	defineTag(MetadataTag.code, MetadataTag);
+
+	class ScriptLimitsTag extends Tag{
+		static get code(){
+			return 65;
+		}
+		parse(buffer, offset){
+			offset += this.recordHeader.size;
+			this.MaxRecursionDepth = get('uint16').parse(buffer, offset);
+			offset += this.MaxRecursionDepth.size;
+			this.ScriptTimeoutSeconds = get('uint16').parse(buffer, offset);
+			return this;
+		}
+	}
+
+	defineTag(ScriptLimitsTag.code, ScriptLimitsTag);
+
+	class SetBackgroundColorTag extends Tag{
+		static get code(){
+			return 9;
+		}
+		parse(buffer, offset){
+			offset += this.recordHeader.size;
+			this.BackgroundColor = get('rgb').parse(buffer, offset);
+			return this;
+		}
+	}
+
+	defineTag(SetBackgroundColorTag.code, SetBackgroundColorTag);
+
+	class ProductInfoTag extends Tag{
+		static get code(){
+			return 41;
+		}
+		parse(buffer, offset){
+			offset += this.recordHeader.size;
+			this.productID = get('uint32').parse(buffer, offset);
+			offset += this.productID.size;
+			this.edition = get('uint32').parse(buffer, offset);
+			offset += this.edition.size;
+			this.majorVersion = buffer[offset];
+			offset++;
+			this.minorVersion = buffer[offset];
+			offset++;
+			this.buildLow = get('uint32').parse(buffer, offset);
+			offset += this.buildLow.size;
+			this.buildHigh = get('uint32').parse(buffer, offset);
+			offset += this.buildHigh.size;
+			this.compilationDateLow = get('uint32').parse(buffer, offset);
+			offset += this.compilationDateLow.size;
+			this.compilationDateHigh = get('uint32').parse(buffer, offset);
+			offset += this.compilationDateHigh.size;
+			return this;
+		}
+	}
+
+	defineTag(ProductInfoTag.code, ProductInfoTag);
+
+	class FrameLabelTag extends Tag{
+		static get code(){
+			return 43;
+		}
+		parse(buffer, offset){
+			offset += this.recordHeader.size;
+			this.frameName = get('nulstring').parse(buffer, offset);
+			return this;
+		}
+	}
+
+	defineTag(FrameLabelTag.code, FrameLabelTag);
+
+	class SymbolClassTag extends Tag{
+		static get code(){
+			return 76;
+		}
+		constructor(recordHeader){
+			super(recordHeader);
+			this.maxSymbols = 100;
+		}
+		parse(buffer, offset){
+			offset += this.recordHeader.size;
+			this.numSymbols = get('uint16').parse(buffer, offset);
+			offset += this.numSymbols.size;
+			this.tagID = [];
+			this.className = [];
+			
+			for(let i = 0; i < this.numSymbols.value && i < this.maxSymbols; i++){
+				this.tagID.push(get('uint16').parse(buffer, offset));
+				offset += this.tagID[this.tagID.length - 1].size;
+				this.className.push(get('nulstring').parse(buffer, offset));
+				offset += this.className[this.className.length - 1].size;
+			}
+			
+			return this;
+		}
+	}
+
+	defineTag(SymbolClassTag.code, SymbolClassTag);
+
+	class ShowFrameTag extends Tag{
+		static get code(){
+			return 1;
+		}
+		parse(buffer, offset){
+			this.data = buffer.slice(offset + this.recordHeader.size, offset + this.size);
+			return this;
+		}
+	}
+
+	defineTag(ShowFrameTag.code, ShowFrameTag);
 
 	class SWFParser {
 		static get VERSION(){

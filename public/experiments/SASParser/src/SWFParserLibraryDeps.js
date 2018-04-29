@@ -5,6 +5,16 @@ import {NulString} from './lib/NulString.js';
 import {Rect} from './lib/Rect.js';
 import {Fixed8} from './lib/Fixed8.js';
 import {RecordHeader} from './lib/RecordHeader.js';
+import {RGB} from './lib/RGB.js';
 
 import {UnknownTag} from './lib/tags/UnknownTag.js';
 import {DoABCTag} from './lib/tags/DoABCTag.js';
+import {EndTag} from './lib/tags/EndTag.js';
+import {FileAttributesTag} from './lib/tags/FileAttributesTag.js';
+import {MetadataTag} from './lib/tags/MetadataTag.js';
+import {ScriptLimitsTag} from './lib/tags/ScriptLimitsTag.js';
+import {SetBackgroundColorTag} from './lib/tags/SetBackgroundColorTag.js';
+import {ProductInfoTag} from './lib/tags/ProductInfoTag.js';
+import {FrameLabelTag} from './lib/tags/FrameLabelTag.js';
+import {SymbolClassTag} from './lib/tags/SymbolClassTag.js';
+import {ShowFrameTag} from './lib/tags/ShowFrameTag.js';

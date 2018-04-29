@@ -7,6 +7,7 @@ export class NulString extends Parsable{
 	}
 	constructor(){
 		super();
+		this.value = '';
 	}
 	parse(buffer, offset){
 		let i = offset;

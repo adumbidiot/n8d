@@ -11,5 +11,6 @@ export class Tag extends Parsable{
 		super();
 		this.recordHeader = recordHeader;
 		this.name = this.constructor.name;
+		this.size = recordHeader.size + recordHeader.length;
 	}
 }

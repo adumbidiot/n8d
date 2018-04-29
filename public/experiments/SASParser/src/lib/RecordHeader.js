@@ -14,7 +14,7 @@ export class RecordHeader extends Parsable {
 		this.length = this._uint.value & (0x3F);
 		this.long = (this.length < 0x3F) ? false : true;
 		if(this.long){
-			this.length = Library.get('uint16').parse(buffer, offset + this.size).value;
+			this.length = Library.get('uint32').parse(buffer, offset + this.size).value;
 			this.size += 4;
 		}
 		this.code = this._uint.value >> 6;

@@ -10,7 +10,7 @@ export class DoABCTag extends Tag{
 		this.size = this.recordHeader.length + this.recordHeader.size;
 		this.flags = Library.get('uint32').parse(buffer, offset + this.recordHeader.size);
 		this.scriptName = Library.get('nulstring').parse(buffer, offset + this.recordHeader.size + this.flags.size);
-		offset += this.recordHeader.size + this.flags.size + this.name.size;
+		offset += this.recordHeader.size + this.flags.size + this.scriptName.size;
 		this.data = buffer.slice(offset, start + this.recordHeader.length);
 		return this;
 	}

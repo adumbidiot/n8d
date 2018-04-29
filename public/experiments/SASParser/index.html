@@ -12,7 +12,7 @@
 		<h2>Ascii Dump</h2>
 		<textarea id="dump" style="width: 100%; height: 50%;"></textarea>
 		<p><a href="http://www-lehre.informatik.uni-osnabrueck.de/~fbstark/diplom/docs/swf/Intro.htm" target="_blank">Good Resource?</a></p>
-		<p><a href = "https://wwwimages2.adobe.com/content/dam/acom/en/devnet/pdf/swf-file-format-spec.pdf">SWF 19 Spec</a></p>
+		<p><a href = "https://wwwimages2.adobe.com/content/dam/acom/en/devnet/pdf/swf-file-format-spec.pdf" target="_blank">SWF 19 Spec</a></p>
 		<script>
 			function loadPong(){
 				filename = 'games/pong.swf';
@@ -40,21 +40,37 @@
 				//console.log('Parse started at ' + startTime);
 			});
 			parser.on('header', function(header){
-				//console.log(header);
+				console.log(header);
+				//document.getElementById('dump').innerHTML += dump(header.buffer, 0, 10000);
 			});
 			parser.on('tag', function(tag){
 				//console.log(tag);
-				output.innerHTML += '(' + tag.name + ', ' + tag.recordHeader.code  +')<br>';
+				let long = (tag.recordHeader.long) ? 'long' : 'short';
+				output.innerHTML += '(' + tag.name + ', ' + tag.recordHeader.code  +', ' + long + ')<br>';
 				if(tag.name !== 'UnknownTag'){
 					console.log(tag);
 				}
+				if(tag.recordHeader.code == 82){
+					document.getElementById('dump').innerHTML = dump(tag.data, 0, tag.size);
+				}
+				
 			});
 			parser.on('end', function(i){
 				endTime = new Date();
 				let time = (endTime.getTime() - startTime.getTime());
-				output.innerHTML += '<b>' + i + ' tags parsed in ' + time + ' ms (' + (i/time).toFixed(2) + ' tags per millisecond)' +'</b><br>';
+				let tps = (i / time).toFixed(2);
+				output.innerHTML += '<b>' + i + ' tags parsed in ' + time + ' ms (' + tps + ' tags per millisecond)' +'</b><br>';
 			});
 			
+			function dump(buf, start, length){
+				start = start || 0;
+				length = (length + start) || buf.length;
+				let a = '';
+				for(let i = start; i < length && i < buf.length; i++){
+					a += String.fromCharCode(buf[i]);
+				}
+				return a;
+			}
 		</script>
 	</body>
 </html>

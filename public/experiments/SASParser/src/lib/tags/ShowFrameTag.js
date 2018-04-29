@@ -1,9 +1,9 @@
 import * as Library from '../../Library.js';
 import {Tag} from './Tag';
 
-export class UnknownTag extends Tag{
+export class ShowFrameTag extends Tag{
 	static get code(){
-		return -1;
+		return 1;
 	}
 	parse(buffer, offset){
 		this.data = buffer.slice(offset + this.recordHeader.size, offset + this.size);
@@ -11,4 +11,4 @@ export class UnknownTag extends Tag{
 	}
 }
 
-Library.defineTag(UnknownTag.code, UnknownTag);
+Library.defineTag(ShowFrameTag.code, ShowFrameTag);
