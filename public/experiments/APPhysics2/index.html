@@ -1,0 +1,59 @@
+<html>
+	<head>
+		<title>AP Physics 2</title>
+		<style>
+			.input{
+				width: 20%;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="main" style="width: 100%; height: 100%; background-color: grey; text-align: center;">
+			<p>M1V1 = M2V2</p>
+			<div id="equation">
+				<input class="input" type="text" value="1" id="M1">
+				<input class="input" type="text" value="1" id="V1">
+				=
+				<input class="input" type="text" value="2" id="M2">
+				<input class="input" type="text" value="" id="V2">
+			</div>
+			<button onclick="calc()">Calc</button>
+		</div>
+		
+		<script>
+			let M1 = document.getElementById('M1');
+			let V1 = document.getElementById('V1');
+			let M2 = document.getElementById('M2');
+			let V2 = document.getElementById('V2');
+			let inputs = [M1, V1, M2, V2];
+			
+			function getInvalidIndex(){
+				for(let i = 0; i != 4; i++){
+					if(!Number(inputs[i].value)){
+						return i;
+					}
+				}
+				return -1;
+			}
+			function calc(){
+				let calc = getInvalidIndex();
+				switch(calc){
+					case 0:
+						inputs[0].value = inputs[2].value * inputs[3].value / inputs[1].value;
+						break;
+					case 1:
+						inputs[1].value = inputs[2].value * inputs[3].value / inputs[0].value;
+						break;
+					case 2: 
+						inputs[2].value = inputs[0].value * inputs[1].value / inputs[3].value;
+						break;
+					case 3:
+						console.log(calc);
+						inputs[3].value = inputs[0].value * inputs[1].value / inputs[2].value;
+						break;
+				}
+			}
+		</script>
+	</body>
+</html>
