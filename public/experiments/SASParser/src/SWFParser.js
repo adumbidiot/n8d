@@ -40,9 +40,10 @@ export class SWFParser {
 	}
 	
 	emit(str, data){
+		if(!this.eventMap[str]) return;
 		if(str === 'start' || str === 'end'){ //Hack for timing
 			this.eventMap[str](data);
-		}else if(this.eventMap[str]){ 
+		}else{ 
 			setTimeout(this.eventMap[str].bind(this, data), 0);
 		}
 	}

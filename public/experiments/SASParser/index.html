@@ -2,66 +2,35 @@
 	<head>
 		<title>SWFTools</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.6/pako.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/riot@3.9/riot+compiler.min.js"></script>
 		<script src="SWFTools.js"></script>
+		<script type="riot/tag" src="tags/display-swf.tag"></script>
+		<script type="riot/tag" src="tags/display-swf-nav.tag"></script>
 	</head>
 	<body>
-		<button onclick="loadPong()">Pong</button>
-		<br>
-		<button onclick="loadTest()">Test</button>
+		<display-swf id="display-swf" src="games/pong.swf"></display-swf>
 		<p id="output"></p>
 		<h2>Ascii Dump</h2>
 		<textarea id="dump" style="width: 100%; height: 50%;"></textarea>
-		<p><a href="http://www-lehre.informatik.uni-osnabrueck.de/~fbstark/diplom/docs/swf/Intro.htm" target="_blank">Good Resource?</a></p>
-		<p><a href = "https://wwwimages2.adobe.com/content/dam/acom/en/devnet/pdf/swf-file-format-spec.pdf" target="_blank">SWF 19 Spec</a></p>
+		<div class="main">
+			<h2>Resources</h2>
+			<p>
+				<a href="http://www-lehre.informatik.uni-osnabrueck.de/~fbstark/diplom/docs/swf/Intro.htm" target="_blank">Good Resource?</a>
+			</p>
+			<p>
+				<a href = "https://wwwimages2.adobe.com/content/dam/acom/en/devnet/pdf/swf-file-format-spec.pdf" target="_blank">SWF 19 Spec</a>
+			</p>
+			<p>
+				<a href = "https://rollupjs.org/guide/en" target="_blank">Build System</a>
+			</p>
+			<p>
+				<a href = "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details" target="_blank">Details Tag</a>
+			</p>
+			<p>
+				<a href = "http://riotjs.com/" target="_blank"></a>
+			</p>
+		</div>
 		<script>
-			function loadPong(){
-				filename = 'games/pong.swf';
-				SWFTools.fetchAndParse(parser, filename);
-			}
-			
-			function loadTest(){
-				filename = 'games/test.swf';
-				SWFTools.fetchAndParse(parser, filename);
-			}
-			
-			let startTime = null;
-			let endTime = null;
-			let output = document.getElementById('output');
-			
-			console.log('SWFTools Version: ' + SWFTools.VERSION);
-			console.log('SWFParser Version: ' + SWFTools.SWFParser.VERSION);
-			
-			let parser = new SWFTools.SWFParser();
-			let filename = 'games/test.swf'; //'games/pong.swf'
-			SWFTools.fetchAndParse(parser, filename);
-			parser.on('start', function(){
-				output.innerHTML = '';
-				startTime = new Date();
-				//console.log('Parse started at ' + startTime);
-			});
-			parser.on('header', function(header){
-				console.log(header);
-				//document.getElementById('dump').innerHTML += dump(header.buffer, 0, 10000);
-			});
-			parser.on('tag', function(tag){
-				//console.log(tag);
-				let long = (tag.recordHeader.long) ? 'long' : 'short';
-				output.innerHTML += '(' + tag.name + ', ' + tag.recordHeader.code  +', ' + long + ')<br>';
-				if(tag.name !== 'UnknownTag'){
-					console.log(tag);
-				}
-				if(tag.recordHeader.code == 82){
-					document.getElementById('dump').innerHTML = dump(tag.data, 0, tag.size);
-				}
-				
-			});
-			parser.on('end', function(i){
-				endTime = new Date();
-				let time = (endTime.getTime() - startTime.getTime());
-				let tps = (i / time).toFixed(2);
-				output.innerHTML += '<b>' + i + ' tags parsed in ' + time + ' ms (' + tps + ' tags per millisecond)' +'</b><br>';
-			});
-			
 			function dump(buf, start, length){
 				start = start || 0;
 				length = (length + start) || buf.length;
@@ -71,6 +40,8 @@
 				}
 				return a;
 			}
+			
+			riot.mount('*');
 		</script>
 	</body>
 </html>
