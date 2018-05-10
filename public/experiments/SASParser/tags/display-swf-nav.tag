@@ -9,26 +9,38 @@
 			display: inline;
 			
 		}
-		.nav-input{
-			position: relative;
+		.nav-item{
 			height: 2rem;
 			left: 0.5rem;
 			top: 0.5rem;
+			position: relative;
+		}
+		.nav-input{
+			width: 12rem;
+			border: 0px;
+			border-top-right-radius: 1rem;
+			border-bottom-right-radius: 1rem;
+			outline: none;
 		}
 		.nav-button{
-			position: relative; 
 			background-color: green; 
-			width: 3rem; 
-			float:left; 
-			height: 2rem; 
-			left: 0.5rem; 
-			top: 0.5rem;
+			width: 6rem; 
+			float:left;  
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			user-select: none;
+			border-top-left-radius: 1rem;
+			border-bottom-left-radius: 1rem;
+		}
+		.nav-button:active{
+			background-color: #00FF00;
 		}
 	</style>
 	<div class="nav">
-		<input type="text" value={value} class="nav-input" ref="input">
-		<div class="nav-button" onclick={go}>
-			<p style="width: 100%; text-align: center; position: absolute; top: 0rem; height: 1rem;">Go</p>
+		<input type="text" value={value} class="nav-input nav-item" ref="input">
+		<div class="nav-button nav-item" onclick={go}>
+			<p style="color: #00FF00;">Go</p>
 		</div>
 	</div>
 	<script>
