@@ -1,0 +1,14 @@
+<html>
+	<head>
+		<title>Charged Conflict</title>
+		<script src="ChargedConflict.js"></script>
+	</head>
+	<body>
+		<canvas width="640" height="480" id="canvas" tabindex='1'></canvas>
+		<script>
+			console.log('Charged Conflict Version: ' + ChargedConflict.VERSION);
+			console.log('Charged Conflict Game Module Version: ' + ChargedConflict.Game.VERSION);
+			let g = new ChargedConflict.Game({canvas: document.getElementById('canvas')});
+		</script>
+	</body>
+</html>
