@@ -15,6 +15,8 @@ export class Game{
 		this.fps = opts.fps || defaultFPS;
 		this.tree = [];
 		this.keys = {};
+		this.top = true;
+		this.collider = new Collider(this.canvas.width, this.canvas.height);
 		this.loop = setInterval(this.loadLoop.bind(this), 1000/this.fps);
 		this.addChild(new LoadingScreen({parent: this}));
 		this.canvas.addEventListener('click', this.processClick.bind(this));
