@@ -10,10 +10,15 @@ export class Entity {
 		this.x = opts.x || 0;
 		this.y = opts.y || 0;
 		this.id = opts.id || ++id;
+		this.stage = this;
+		let stage = this;
+		while(!this.stage.top){
+			this.stage = this.stage.parent;
+		}
 	}
-	update(){
+	update(ctx){
 		for(let i = 0; i != this.children.length; i++){
-			this.children[i].update();
+			this.children[i].update(ctx);
 		}
 	}
 	render(){
@@ -27,6 +32,20 @@ export class Entity {
 		this.children.push(child);
 	}
 	removeChild(id){
-		throw"WIP";
+		for(let i = 0; i != this.children.length; i++){
+			if(this.children[i].id === id){
+				 return this.children.splice(i, 1);
+			}
+		}
+		return -1;
+	}
+	onClick(){
+		
+	}
+	destroy(){
+		while(this.children.length > 0){
+			this.children[0].destroy();
+		}
+		this.parent.removeChild(this.id);
 	}
 }

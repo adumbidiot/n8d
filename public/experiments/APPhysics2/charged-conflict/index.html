@@ -5,7 +5,9 @@
 	</head>
 	<body>
 		<canvas width="640" height="480" id="canvas" tabindex='1'></canvas>
+		<div id="debug"></div>
 		<script>
+			let debug = document.getElementById('debug');
 			console.log('Charged Conflict Version: ' + ChargedConflict.VERSION);
 			console.log('Charged Conflict Game Module Version: ' + ChargedConflict.Game.VERSION);
 			let g = new ChargedConflict.Game({canvas: document.getElementById('canvas')});
