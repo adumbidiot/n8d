@@ -311,6 +311,18 @@
 			this.charges.push(child); //TODO: Reject noncharges
 			super.addChild(child); //Hindsight: Should have just rejected all non-charge children and looped over the children in charges. 
 		}
+		update(ctx){
+			for(let i = 0; i != this.children.length; i++){
+				this.children[i].updateAcceleration();
+				this.children[i].updateVelocity();
+			}
+			for(let i = 0; i != this.children.length; i++){
+				this.children[i].updatePosition();
+			}
+		}
+		getChargeCount(){
+			return this.children.length; //Cracks around 400 charges. More than enoguh.
+		}
 	}
 
 	const k = 9 * Math.pow(10, 9);
@@ -322,6 +334,9 @@
 			super(opts);
 			this.charge = opts.charge || defaultCharge;
 			this.mass = opts.mass || defaultMass;
+			
+			this.boundStrategy = /*'wallBound';*/this.stage.settings['loadingScreenBoundStrategy'] || 'noWall';
+			
 			switch(Math.sign(this.charge)){
 				case 1: 
 					this.fillStyle = 'red';
@@ -348,44 +363,58 @@
 			super.render();
 		}
 		update(ctx){
+			return;
 			super.update(ctx);
+			
+			this.updateAcceleration();
+			this.updateVelocity();
+			this.updatePosition();
+		}
+		updateAcceleration(){
 			this.ax = 0;
 			this.ay = 0;
 			
 			let rx = 0;
 			let ry = 0;
 			let r = 0;
-			
+		
 			for(let i = 0; i != this.parent.charges.length; i++){
 				if(this.parent.charges[i].id === this.id) continue;
 				rx = this.x - this.parent.charges[i].x;
 				ry = this.y - this.parent.charges[i].y;
 				
 				r = Math.hypot(rx, ry);
-				if(r === 0 || r < this.radius) continue; //Temp. Things get WEIRD. Like crashy weird.
+				if(this.id === this.parent.charges[i].id) continue;
+				if(r === 0 || r < this.radius + this.parent.charges[i].radius) r = this.radius + this.parent.charges[i].radius; //Patch for no colliders. NOTE: Keep in mind this will need to stay after becuase of simulation stepping causing teleportation
 				
 				let angle = Math.asin(ry / r);
 				let angleX = Math.cos(angle) * Math.sign(this.x - this.parent.charges[i].x);
 				let angleY = Math.sin(angle);
 				
 				let f = calculateAttraction(this.charge, this.parent.charges[i].charge, r); 
-				
+					
 				let fx = (f * angleX);
 				let fy = (f * angleY);
 
 				this.ax += (fx / this.mass); //F = MA
 				this.ay += (fy / this.mass);
 			}
-			this.vx += this.ax;
-			this.x += this.vx;
-			
-			this.vy += this.ay;
-			this.y += this.vy;
-			
-			
-			//wallBound.bind(this)(); //Make a global setting
-			noWall.bind(this)();
 		}
+		updateVelocity(){
+			this.vx += this.ax;
+			this.vy += this.ay;
+		}
+		
+		updatePosition(){
+			this.x += this.vx;
+			this.y += this.vy;
+			if(this.boundStrategy === 'wallBound'){
+				wallBound.bind(this)(); //Make a global setting
+			}else if(this.boundStrategy === 'noWall'){
+				noWall.bind(this)();
+			}
+		}
+		
 		destroy(){
 			super.destroy(); //Don't pollute collider system with old colliders
 			this.stage.collider.remove('charge' + this.id);
@@ -412,6 +441,28 @@
 		}
 	}
 
+	function wallBound(){ //Prevent from leaving screen
+		if((this.x + this.radius) > this.ctx.canvas.width){
+			this.x = this.ctx.canvas.width - this.radius;
+			this.vx = 0;
+		}
+			
+		if((this.x - this.radius) < 0){
+			this.x = this.radius;
+			this.vx = 0;
+		}
+			
+		if((this.y + this.radius) > this.ctx.canvas.height){
+			this.y = this.ctx.canvas.height - this.radius;
+			this.vy = 0;
+		}
+			
+		if((this.y - this.radius) < 0){
+			this.y = this.radius;
+			this.vy = 0;
+		}
+	}
+
 	class LoadingScreen extends Entity{
 		constructor(opts){
 			super(opts);
@@ -423,8 +474,8 @@
 			this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: 3 * (this.ctx.canvas.height)/4, textAlign: 'center', content: 'Press the spacebar to continue...', font: '13px Comic Sans MS', fillStyle: 'grey'}));
 			this.chargeSim = new ChargeParent({parent: this});
 			
-			//this.addPositive({x: 100, y: 100});
-			//this.addNegative({x: 150, y: 200});
+			this.addPositive({x: 100, y: 100});
+			this.addNegative({x: 150, y: 200});
 			
 			let N = this.stage.settings['loadingScreenParticleCount'] || 40;
 			addRandom(this, N);
@@ -496,6 +547,7 @@
 			if(!opts) throw "Need to provide options to init game!"; //Might just create a canvas and everything
 			if(!opts.canvas) throw "Need to provide canvas element to init game!";
 			this.canvas = opts.canvas;
+			this.canvas.focus();
 			this.settings = opts.settings || {}; //Global settings object
 			this.ctx = this.canvas.getContext('2d'); //Store a ctx for easy access
 			this.fps = opts.fps || defaultFPS; //Let users set fps. NOTE: Physics is set on fps so changing it will mess up eveything. Probably fun to watch though;
@@ -503,7 +555,7 @@
 			this.keyManager = new KeyManager(); //Slightly less messy than a global object for key states
 			this.top = true; //Way to tell parent apart from the rest
 			this.collider = new Collider(this.canvas.width, this.canvas.height); //Collider engine. Maybe make it replacable. or maybe allow it to be attached to entities. IDK.
-			this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+			this.start();
 			this.addChild(new LoadingScreen({parent: this})); //Loading screen for assets. This has no assets yet, so it just does a cute physics thing.
 			this.canvas.addEventListener('mousedown', this.processClick.bind(this)); //Capture inputs
 			this.canvas.addEventListener('mouseup', this.processClick.bind(this));
@@ -606,6 +658,14 @@
 		}
 		halt(){
 			clearInterval(this.gameLoop);
+		}
+		start(){
+			this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+		}
+		setFPS(fps){
+			this.fps = fps;
+			this.halt();
+			this.start();
 		}
 	}
 

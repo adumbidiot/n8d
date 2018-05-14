@@ -11,6 +11,7 @@ export class Game{
 		if(!opts) throw "Need to provide options to init game!"; //Might just create a canvas and everything
 		if(!opts.canvas) throw "Need to provide canvas element to init game!";
 		this.canvas = opts.canvas;
+		this.canvas.focus();
 		this.settings = opts.settings || {}; //Global settings object
 		this.ctx = this.canvas.getContext('2d'); //Store a ctx for easy access
 		this.fps = opts.fps || defaultFPS; //Let users set fps. NOTE: Physics is set on fps so changing it will mess up eveything. Probably fun to watch though;
@@ -18,7 +19,7 @@ export class Game{
 		this.keyManager = new KeyManager(); //Slightly less messy than a global object for key states
 		this.top = true; //Way to tell parent apart from the rest
 		this.collider = new Collider(this.canvas.width, this.canvas.height); //Collider engine. Maybe make it replacable. or maybe allow it to be attached to entities. IDK.
-		this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+		this.start();
 		this.addChild(new LoadingScreen({parent: this})); //Loading screen for assets. This has no assets yet, so it just does a cute physics thing.
 		this.canvas.addEventListener('mousedown', this.processClick.bind(this)); //Capture inputs
 		this.canvas.addEventListener('mouseup', this.processClick.bind(this));
@@ -121,6 +122,14 @@ export class Game{
 	}
 	halt(){
 		clearInterval(this.gameLoop);
+	}
+	start(){
+		this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+	}
+	setFPS(fps){
+		this.fps = fps;
+		this.halt();
+		this.start();
 	}
 }
 

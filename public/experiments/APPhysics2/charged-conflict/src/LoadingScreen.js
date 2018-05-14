@@ -17,8 +17,8 @@ export class LoadingScreen extends Entity{
 		this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: 3 * (this.ctx.canvas.height)/4, textAlign: 'center', content: 'Press the spacebar to continue...', font: '13px Comic Sans MS', fillStyle: 'grey'}));
 		this.chargeSim = new ChargeParent({parent: this});
 		
-		//this.addPositive({x: 100, y: 100});
-		//this.addNegative({x: 150, y: 200});
+		this.addPositive({x: 100, y: 100});
+		this.addNegative({x: 150, y: 200});
 		
 		let N = this.stage.settings['loadingScreenParticleCount'] || 40;
 		addRandom(this, N);

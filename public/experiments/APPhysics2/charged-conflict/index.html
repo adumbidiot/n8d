@@ -5,6 +5,10 @@
 	</head>
 	<body>
 		<canvas width="640" height="480" id="canvas" tabindex='1'></canvas>
+		<div id="controls">
+			<button onclick="g.setFPS(0);">TURBO</button>
+			<button onclick="g.setFPS(60);">60FPS</button>
+		</div>
 		<div id="debug"></div>
 		<script>
 			let debug = document.getElementById('debug');

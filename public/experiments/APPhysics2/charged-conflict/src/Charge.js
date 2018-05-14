@@ -11,6 +11,9 @@ export class Charge extends CircleEntity{
 		super(opts);
 		this.charge = opts.charge || defaultCharge;
 		this.mass = opts.mass || defaultMass;
+		
+		this.boundStrategy = /*'wallBound';*/this.stage.settings['loadingScreenBoundStrategy'] || 'noWall';
+		
 		switch(Math.sign(this.charge)){
 			case 1: 
 				this.fillStyle = 'red';
@@ -37,44 +40,58 @@ export class Charge extends CircleEntity{
 		super.render();
 	}
 	update(ctx){
+		return;
 		super.update(ctx);
+		
+		this.updateAcceleration();
+		this.updateVelocity();
+		this.updatePosition();
+	}
+	updateAcceleration(){
 		this.ax = 0;
 		this.ay = 0;
 		
 		let rx = 0;
 		let ry = 0;
 		let r = 0;
-		
+	
 		for(let i = 0; i != this.parent.charges.length; i++){
 			if(this.parent.charges[i].id === this.id) continue;
 			rx = this.x - this.parent.charges[i].x;
 			ry = this.y - this.parent.charges[i].y;
 			
 			r = Math.hypot(rx, ry);
-			if(r === 0 || r < this.radius) continue; //Temp. Things get WEIRD. Like crashy weird.
+			if(this.id === this.parent.charges[i].id) continue;
+			if(r === 0 || r < this.radius + this.parent.charges[i].radius) r = this.radius + this.parent.charges[i].radius; //Patch for no colliders. NOTE: Keep in mind this will need to stay after becuase of simulation stepping causing teleportation
 			
 			let angle = Math.asin(ry / r);
 			let angleX = Math.cos(angle) * Math.sign(this.x - this.parent.charges[i].x);
 			let angleY = Math.sin(angle);
 			
 			let f = calculateAttraction(this.charge, this.parent.charges[i].charge, r); 
-			
+				
 			let fx = (f * angleX);
 			let fy = (f * angleY);
 
 			this.ax += (fx / this.mass); //F = MA
 			this.ay += (fy / this.mass);
 		}
-		this.vx += this.ax;
-		this.x += this.vx;
-		
-		this.vy += this.ay;
-		this.y += this.vy;
-		
-		
-		//wallBound.bind(this)(); //Make a global setting
-		noWall.bind(this)();
 	}
+	updateVelocity(){
+		this.vx += this.ax;
+		this.vy += this.ay;
+	}
+	
+	updatePosition(){
+		this.x += this.vx;
+		this.y += this.vy;
+		if(this.boundStrategy === 'wallBound'){
+			wallBound.bind(this)(); //Make a global setting
+		}else if(this.boundStrategy === 'noWall'){
+			noWall.bind(this)();
+		}
+	}
+	
 	destroy(){
 		super.destroy(); //Don't pollute collider system with old colliders
 		this.stage.collider.remove('charge' + this.id);
@@ -104,17 +121,21 @@ function noWall(){ //Teleports to other end of screen. Hilariously wrong physics
 function wallBound(){ //Prevent from leaving screen
 	if((this.x + this.radius) > this.ctx.canvas.width){
 		this.x = this.ctx.canvas.width - this.radius;
+		this.vx = 0;
 	}
 		
 	if((this.x - this.radius) < 0){
 		this.x = this.radius;
+		this.vx = 0;
 	}
 		
 	if((this.y + this.radius) > this.ctx.canvas.height){
 		this.y = this.ctx.canvas.height - this.radius;
+		this.vy = 0;
 	}
 		
 	if((this.y - this.radius) < 0){
 		this.y = this.radius;
+		this.vy = 0;
 	}
 }
