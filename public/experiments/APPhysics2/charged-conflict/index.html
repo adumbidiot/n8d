@@ -8,8 +8,16 @@
 		<div id="controls">
 			<button onclick="g.setFPS(0);">TURBO</button>
 			<button onclick="g.setFPS(60);">60FPS</button>
+			<button onclick="g.halt()">Halt</button>
+			<button onclick="console.log(g.tree[0].children[5].saveJSON());">Save</button>
 		</div>
 		<div id="debug"></div>
+		<div>
+			<h2>Testimonies</h2>
+			<ul>
+				<li>"Its pretty alright" -Michael Insongna</li>
+			</ul>
+		</div>
 		<script>
 			let debug = document.getElementById('debug');
 			console.log('Charged Conflict Version: ' + ChargedConflict.VERSION);

@@ -36,9 +36,11 @@ export class LoadingScreen extends Entity{
 	
 	onClick(data){
 		if(data.key === 3){
-			this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: data.x, y: data.y, charge: -0.0001}));
+			//this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: data.x, y: data.y, charge: -0.0001}));
+			this.addNegative({x: data.x, y: data.y});
 		}else if(data.key === 1){
-			this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: data.x, y: data.y, charge: 0.0001}));
+			//this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: data.x, y: data.y, charge: 0.0001}));
+			this.addPositive({x: data.x, y: data.y});
 		}else if(data.key === 2){
 			this.addChild(new CircleEntity({x: data.x, y: data.y, radius: 10, parent: this, fillStyle: 'grey'}));
 		}
@@ -51,13 +53,15 @@ export class LoadingScreen extends Entity{
 		opts = opts || {};
 		let x = opts.x || 100;
 		let y = opts.y || 100;
-		this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: x, y: y, charge: 0.0001}));
+		let mass = opts.mass || 10;
+		this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: x, y: y, charge: 0.001, mass}));
 	}
 	addNegative(opts){
 		opts = opts || {};
 		let x = opts.x || 150;
 		let y = opts.y || 200;
-		this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: x, y: y, charge: -0.0001}));
+		let radius = opts.radius || 3;
+		this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: x, y: y, charge: -0.001, radius}));
 	}
 }
 

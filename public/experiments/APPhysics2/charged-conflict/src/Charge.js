@@ -12,7 +12,7 @@ export class Charge extends CircleEntity{
 		this.charge = opts.charge || defaultCharge;
 		this.mass = opts.mass || defaultMass;
 		
-		this.boundStrategy = /*'wallBound';*/this.stage.settings['loadingScreenBoundStrategy'] || 'noWall';
+		this.boundStrategy = /*'wallBound';*/this.stage.settings['loadingScreenBoundStrategy'] || 'wallBound' ||'noWall';
 		
 		switch(Math.sign(this.charge)){
 			case 1: 

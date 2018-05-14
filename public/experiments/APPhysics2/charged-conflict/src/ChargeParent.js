@@ -21,6 +21,11 @@ export class ChargeParent extends Entity{
 		}
 	}
 	getChargeCount(){
-		return this.children.length; //Cracks around 400 charges. More than enoguh.
+		return this.children.length; //Cracks around 400 charges. More than enoguh.NOTE: Michael got to 1200. NOT PLAYABLE.
+	}
+	saveJSON(){
+		let export = {};
+		//export.charges = ;
+		return JSON.stringify(export);
 	}
 }
