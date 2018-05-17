@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<title>Charged Conflict</title>
+		<script src="BoyceBall.js"></script>
+	</head>
+	<body>
+		<canvas width="640" height="480" id="canvas" tabindex='1'></canvas>
+		<div id="controls">
+			<button onclick="g.setFPS(0);">TURBO</button>
+			<button onclick="g.setFPS(60);">60FPS</button>
+			<button onclick="g.halt()">Halt</button>
+			<button onclick="console.log(g.tree[0].children[5].saveJSON());">Save</button>
+		</div>
+		<div id="debug"></div>
+		<script>
+			let debug = document.getElementById('debug');
+			console.log('Boyce Ball Version: ' + BoyceBall.VERSION);
+			console.log('Boyce Ball Game Module Version: ' + BoyceBall.Game.VERSION);
+			let g = new BoyceBall.Game({canvas: document.getElementById('canvas')});
+		</script>
+	</body>
+</html>
