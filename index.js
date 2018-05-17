@@ -7,7 +7,7 @@ fastify.register(fastifyStatic, {
 	root: path.join(__dirname, 'public')
 });
 
-fastify.listen(PORT, function(err){
+fastify.listen(8888, function(err){
 	if(err){
 		throw err;
 	}else{

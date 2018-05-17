@@ -123,15 +123,11 @@
 			this.broadPhase.insert(object);
 		}
 		remove(id){
-			let obj = -1;
 			for(let i = 0; i != this.objects.length; i++){
 				if(this.objects[i].id === id){
 					this.objects.splice(i, 1);
 					i--;
 				}
-			}
-			if(obj != -1){
-				this.reindex();
 			}
 		}
 		reindex(){
@@ -275,31 +271,38 @@
 		}
 	}
 
-	class GameScreen extends Entity{
+	class Paddle extends RectEntity {
 		constructor(opts){
 			super(opts);
-			this.addChild(new RectEntity({parent: this, width: this.ctx.canvas.width, height: this.ctx.canvas.height, fillStyle: 'black'}));
-			this.addChild(new RectEntity({parent: this, width: 100, height: this.ctx.canvas.height / 4, fillStyle: 'blue', x: this.ctx.canvas.width - 20, y: this.ctx.canvas.width/2, id: 'bluePlayer'}));
-			this.addChild(new RectEntity({parent: this, width: 100, height: 100, fillStyle: 'red'}));
 		}
 		update(ctx){
 			super.update(ctx);
 			if(ctx.keyManager.get('w')){
-				let player = this.getByID('bluePlayer');
-				player.y -= 5;
+				this.y -= 5;
 				
-				if(player.y < 0){
-					player.y = 0;
+				if(this.y < 0){
+					this.y = 0;
 				}
 			}else if(ctx.keyManager.get('s')){
-				let player = this.getByID('bluePlayer');
-				player.y += 5;
-				if(player.y + player.height> this.stage.canvas.height){
+				this.y += 5;
+				if(this.y + this.height> this.stage.canvas.height){
 					player.y = this.stage.canvas.height - player.height;
 				}
 			}
-			
-			
+		}
+	}
+
+	class GameScreen extends Entity{
+		constructor(opts){
+			super(opts);
+			this.addChild(new RectEntity({parent: this, width: this.ctx.canvas.width, height: this.ctx.canvas.height, fillStyle: 'black'}));
+			this.bluePaddle = new Paddle({parent: this});
+			this.addChild(this.bluePaddle);
+			this.addChild(new RectEntity({parent: this, width: 100, height: this.ctx.canvas.height / 4, fillStyle: 'blue', x: this.ctx.canvas.width - 20, y: this.ctx.canvas.width/2, id: 'bluePlayer'}));
+			this.addChild(new RectEntity({parent: this, width: 100, height: 100, fillStyle: 'red'}));
+		}
+		update(ctx){
+			super.update(ctx);	
 		}
 	}
 
