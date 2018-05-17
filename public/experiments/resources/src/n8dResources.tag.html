@@ -1,0 +1,84 @@
+<n8d-resources src={src}>
+	<style>
+		.main{
+			background-color: #777777;
+			text-align: center;
+			border-radius: 3rem;
+			border: 1rem solid black;
+		}
+		h1{
+			color: #383838;
+			user-select: none;
+		}
+		.entry-wrapper{
+			padding-bottom: 5rem;
+		}
+		.entry{
+			padding-bottom: 1rem;
+		}
+		.link-button{
+			background-color: #FF0000;
+			width: 50%;
+			left: 25%;
+			position: relative;
+			color: #000000;
+			border-radius: 1rem;
+			user-select: none;
+			transition-duration: 3s;
+			font-size: 1.2rem;
+		}
+		.link-button:hover{
+			color: #FF0000;
+			background-color: #000000;
+			transition-duration: 1s;
+		}
+		a{
+			text-decoration: none;
+		}
+		.error{
+			color: #D00000;
+		}
+	</style>
+	<div class="main">
+		<h1>Resources</h1>
+		<virtual if={this.manifest == null && !this.error}>
+			<p>Loading...</p>
+		</virtual>
+		<div if={error} class="error">
+			<h2>Error</h2>
+			<p>{error.message}</p>
+		</div>
+		<div class="entry-wrapper">
+			<div each={entry in manifest} class="entry">
+				<a href={entry.url} target="_blank">
+					<div class="link-button">{entry.label}</div>
+				</a>
+			</div>
+		</div>
+	</div>
+	<script>
+		let tag = this; 
+		this.src = opts.src;
+		this.manifest = null;
+		this.error = null;
+		
+		this.logErr = function(err){
+			tag.error = err;
+			tag.update();
+		}
+		
+		fetch(this.src).catch(function(err){
+			tag.logErr(err);
+		}).then(function(res){
+			if(res.status < 400){
+				return res.json();
+			}
+			throw res;
+		}).catch(function(err){
+			tag.logErr(err);
+		}).then(function(json){
+			tag.manifest = json;
+			tag.update();
+		});
+	</script>
+</n8d-resources>

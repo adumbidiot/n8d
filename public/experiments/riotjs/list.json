@@ -1,0 +1,14 @@
+[
+	{
+		"url": "https://riot.js.org",
+		"label": "Main Website"
+	},
+	{
+		"url": "http://tutorials.jenkov.com/riotjs/index.html",
+		"label": "Tutorial"
+	},
+	{
+		"label": "Cheatsheet",
+		"url": "http://martinmuzatko.github.io/riot-cheatsheet/"
+	}
+]

@@ -2,16 +2,13 @@
 	<head>
 		<title>Home</title>
 		<script src="/scripts/riot+compiler.min.js"></script>
+		<script src="/experiments/resources/dist/n8d-resources.js"></script>
 	</head>
 	<body>
 		<h1>RIOT.JS</h1>
-		<div>
-			<h2>Resources</h2>
-			<a href="#">Main</a>
-			<a href="http://tutorials.jenkov.com/riotjs/index.html">Tutorial</a>
-		</div>
+		<n8d-resources src="list.json"></n8d-resources>
 		<script>
-		
+			riot.mount('*');
 		</script>
 	</body>
 </html>
