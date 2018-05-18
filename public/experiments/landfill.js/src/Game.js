@@ -2,6 +2,7 @@ import {Collider, Rect} from './Collider.js';
 import {Entity} from './Entity.js';
 import {RectEntity} from './RectEntity.js';
 import {TextEntity} from './TextEntity.js';
+import {CircleEntity} from './CircleEntity.js';
 
 let defaultFPS = 60;
 
@@ -18,7 +19,8 @@ export class Game extends Entity{
 		this.entityDefs = {
 			Entity: Entity,
 			RectEntity: RectEntity,
-			TextEntity: TextEntity
+			TextEntity: TextEntity,
+			CircleEntity: CircleEntity
 		};
 		this.loader = new Loader(this);
 		if(opts.entities){
@@ -49,31 +51,23 @@ export class Game extends Entity{
 		}
 	}
 	loop(){
+		let now = Date.now();
+		let delta = now - (this.last || 0);
+		this.last = now;
+		
 		this.clearScreen();
-		let ctx = {keyManager: this.keyManager};
+		let ctx = {keyManager: this.keyManager, delta: delta};
 		this.update(ctx);
 		this.render();
 		this.keyManager.resetChanged(); //Allow detection of sudden events or listen to changes
+		requestAnimationFrame(this.loop.bind(this));
 	}
 	clearScreen(){
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); //SSSHHHHH
 	}
 	update(ctx){
 		this.collider.reindex(); //Things might have moved. Maybe blurring the lines between entity and collider is a good idea, but ill keep them seperate for cimplicity for now
-		for(let i = 0; i < this.children.length; i++){
-			this.children[i].update(ctx);
-		}
-	}
-	render(){
-		for(let i = 0; i != this.children.length; i++){
-			this.ctx.save(); //So you can get a clean env each time
-			this.children[i].render();
-			this.ctx.restore();
-		}
-	}
-
-	getID(){
-		
+		super.update(ctx);
 	}
 	processClick(e){
 		let rect = this.canvas.getBoundingClientRect();
@@ -131,7 +125,8 @@ export class Game extends Entity{
 		clearInterval(this.gameLoop);
 	}
 	start(){
-		this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+		//this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+		requestAnimationFrame(this.loop.bind(this));
 	}
 	setFPS(fps){
 		this.fps = fps;
@@ -201,28 +196,5 @@ class Loader{
 					resolve(module.default(this.game));
 				});
 			});
-			/*return new Promise(function(resolve, reject){
-				fetch(url).catch(function(err){
-					throw err;
-				}).then(function(res){
-					return res.text();
-				}).catch(function(err){
-					throw err;
-				}).then(function(data){
-					let script = document.createElement('script');
-					script.onload = function(){
-						console.log(this, window.LoadingScreen);
-					}
-					document.body.append(script);
-					console.log(data);
-				});*/
-				/*
-				let script = document.createElement('script');
-				script.src = url;
-				script.onload = function(){
-					console.log(this);
-				};
-				document.body.append(script);
-			});*/
 		}
 }

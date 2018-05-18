@@ -6,6 +6,9 @@ export class Collider{
 	constructor(width, height){
 		this.broadPhase = new Quadtree(0, new Rect({x: 0, y: 0, width: width, height: height})); //Possibility of collider "interface", interchangable broadphase
 		this.objects = []; //List of refs to all colliders regsitered
+		this.colliderDefs = {
+			Rect: Rect
+		}
 	}
 	insert(collider){
 		this.objects.push(collider);
@@ -45,8 +48,39 @@ export class Collider{
 		this.broadPhase.retrieve(list, object);
 		return list;
 	}
-	getCollisions(object){
-		return this.getProbableCollision(object); //Narrow phase is not implemented. Engine does not require presice collision detection (yet)...
+	getCollisions(object, opts){
+		opts = opts || {};
+		let disableBroad = opts.disableBroad;
+		let probable = [];
+		if(!disableBroad){
+			probable = this.getProbableCollision(object); //Narrow phase is not implemented. Engine does not require presice collision detection (yet)...
+		}else{
+			probable = this.objects;
+		}
+		let data = [];
+		for(let i = 0; i != probable.length; i++){
+			if(this.isColliding(object, probable[i])){
+				data.push(probable[i]);
+			}
+		}
+		return data;
+	}
+	getColliderDef(name){
+		return this.colliderDefs[name] || -1;
+	}
+	isColliding(collider1, collider2){
+		//console.log(collider1, collider2);
+		switch(collider1.type){
+			case 'Rect':{
+				switch(collider2.type){
+					case 'Rect': {
+						return (collider1.x < collider2.x + collider2.width && collider1.x + collider1.width > collider2.x && collider1.y < collider2.y + collider2.height && collider1.height + collider1.y > collider2.y);
+					}
+				}
+				break;
+			}
+		}
+		return -1;
 	}
 }
 

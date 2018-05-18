@@ -2,6 +2,9 @@ class Collider{
 	constructor(width, height){
 		this.broadPhase = new Quadtree(0, new Rect({x: 0, y: 0, width: width, height: height})); //Possibility of collider "interface", interchangable broadphase
 		this.objects = []; //List of refs to all colliders regsitered
+		this.colliderDefs = {
+			Rect: Rect
+		};
 	}
 	insert(collider){
 		this.objects.push(collider);
@@ -41,8 +44,39 @@ class Collider{
 		this.broadPhase.retrieve(list, object);
 		return list;
 	}
-	getCollisions(object){
-		return this.getProbableCollision(object); //Narrow phase is not implemented. Engine does not require presice collision detection (yet)...
+	getCollisions(object, opts){
+		opts = opts || {};
+		let disableBroad = opts.disableBroad;
+		let probable = [];
+		if(!disableBroad){
+			probable = this.getProbableCollision(object); //Narrow phase is not implemented. Engine does not require presice collision detection (yet)...
+		}else{
+			probable = this.objects;
+		}
+		let data = [];
+		for(let i = 0; i != probable.length; i++){
+			if(this.isColliding(object, probable[i])){
+				data.push(probable[i]);
+			}
+		}
+		return data;
+	}
+	getColliderDef(name){
+		return this.colliderDefs[name] || -1;
+	}
+	isColliding(collider1, collider2){
+		//console.log(collider1, collider2);
+		switch(collider1.type){
+			case 'Rect':{
+				switch(collider2.type){
+					case 'Rect': {
+						return (collider1.x < collider2.x + collider2.width && collider1.x + collider1.width > collider2.x && collider1.y < collider2.y + collider2.height && collider1.height + collider1.y > collider2.y);
+					}
+				}
+				break;
+			}
+		}
+		return -1;
 	}
 }
 
@@ -274,6 +308,21 @@ class TextEntity extends Entity{
 	}
 }
 
+class CircleEntity extends Entity{
+		constructor(opts){
+			super(opts);
+			this.radius = opts.radius || 10;
+			this.fillStyle = opts.fillStyle || 'red';
+		}
+		render(){
+			super.render();
+			this.ctx.beginPath();
+			this.ctx.fillStyle = this.fillStyle;
+			this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+			this.ctx.fill();
+		}
+}
+
 let defaultFPS = 60;
 
 class Game extends Entity{
@@ -289,7 +338,8 @@ class Game extends Entity{
 		this.entityDefs = {
 			Entity: Entity,
 			RectEntity: RectEntity,
-			TextEntity: TextEntity
+			TextEntity: TextEntity,
+			CircleEntity: CircleEntity
 		};
 		this.loader = new Loader(this);
 		if(opts.entities){
@@ -320,31 +370,23 @@ class Game extends Entity{
 		}
 	}
 	loop(){
+		let now = Date.now();
+		let delta = now - (this.last || 0);
+		this.last = now;
+		
 		this.clearScreen();
-		let ctx = {keyManager: this.keyManager};
+		let ctx = {keyManager: this.keyManager, delta: delta};
 		this.update(ctx);
 		this.render();
 		this.keyManager.resetChanged(); //Allow detection of sudden events or listen to changes
+		requestAnimationFrame(this.loop.bind(this));
 	}
 	clearScreen(){
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); //SSSHHHHH
 	}
 	update(ctx){
 		this.collider.reindex(); //Things might have moved. Maybe blurring the lines between entity and collider is a good idea, but ill keep them seperate for cimplicity for now
-		for(let i = 0; i < this.children.length; i++){
-			this.children[i].update(ctx);
-		}
-	}
-	render(){
-		for(let i = 0; i != this.children.length; i++){
-			this.ctx.save(); //So you can get a clean env each time
-			this.children[i].render();
-			this.ctx.restore();
-		}
-	}
-
-	getID(){
-		
+		super.update(ctx);
 	}
 	processClick(e){
 		let rect = this.canvas.getBoundingClientRect();
@@ -402,7 +444,8 @@ class Game extends Entity{
 		clearInterval(this.gameLoop);
 	}
 	start(){
-		this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+		//this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+		requestAnimationFrame(this.loop.bind(this));
 	}
 	setFPS(fps){
 		this.fps = fps;
@@ -472,29 +515,6 @@ class Loader{
 					resolve(module.default(this.game));
 				});
 			});
-			/*return new Promise(function(resolve, reject){
-				fetch(url).catch(function(err){
-					throw err;
-				}).then(function(res){
-					return res.text();
-				}).catch(function(err){
-					throw err;
-				}).then(function(data){
-					let script = document.createElement('script');
-					script.onload = function(){
-						console.log(this, window.LoadingScreen);
-					}
-					document.body.append(script);
-					console.log(data);
-				});*/
-				/*
-				let script = document.createElement('script');
-				script.src = url;
-				script.onload = function(){
-					console.log(this);
-				};
-				document.body.append(script);
-			});*/
 		}
 }
 

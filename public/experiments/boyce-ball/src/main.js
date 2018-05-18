@@ -4,7 +4,9 @@ export class Game{
 	constructor(opts){
 		opts.entities = [
 			'./custom/LoadingScreen.js',
-			'./custom/GameScreen.js'
+			'./custom/GameScreen.js',
+			'./custom/Paddle.js',
+			'./custom/Ball.js'
 		];
 		this.engine = new landfill.Game(opts);
 	}
