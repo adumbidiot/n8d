@@ -1,0 +1,11 @@
+{
+  "name": "landfill",
+  "version": "1.0.0",
+  "description": "js game engine of questionable quality",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "adumbidiot",
+  "license": "ISC"
+}

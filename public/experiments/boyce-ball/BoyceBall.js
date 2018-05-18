@@ -4,107 +4,6 @@
 	(factory((global.BoyceBall = {})));
 }(this, (function (exports) { 'use strict';
 
-	let id = 0;
-
-	class Entity {
-		constructor(opts){
-			if(!opts) throw "Need to provide options to init!";
-			if(!opts.parent) throw "Need to provide parent to init!";
-			this.parent = opts.parent;
-			this.ctx = this.parent.ctx;
-			this.children = [];
-			this.x = opts.x || 0;
-			this.y = opts.y || 0;
-			this.id = opts.id || ++id;
-			this.stage = this;
-			while(!this.stage.top){
-				this.stage = this.stage.parent;
-			}
-		}
-		update(ctx){
-			for(let i = 0; i != this.children.length; i++){
-				this.children[i].update(ctx);
-			}
-		}
-		render(){
-			for(let i = 0; i != this.children.length; i++){
-				this.ctx.save();
-				this.children[i].render();
-				this.ctx.restore();
-			}
-		}
-		addChild(child){
-			this.children.push(child);
-		}
-		removeChild(id){
-			for(let i = 0; i != this.children.length; i++){
-				if(this.children[i].id === id){
-					 return this.children.splice(i, 1);
-				}
-			}
-			return -1;
-		}
-		onClick(){
-			
-		}
-		destroy(){
-			while(this.children.length > 0){
-				this.children[0].destroy();
-			}
-			this.parent.removeChild(this.id);
-		}
-		getByID(id){
-			for(let i = 0; i != this.children.length; i++){
-				if(id == this.children[i].id) return this.children[i];
-			}
-		}
-	}
-
-	let defaultWidth = 100;
-	let defaultHeight = 100;
-	let defaultFillStyle = 'white';
-
-	class RectEntity extends Entity{
-			constructor(opts){
-				super(opts);
-				this.width = opts.width || defaultWidth;
-				this.height = opts.height || defaultHeight;
-				this.fillStyle = opts.fillStyle || defaultFillStyle;
-			}
-			update(){
-				super.update();
-			}
-			render(){
-				super.render();
-				this.ctx.fillStyle = this.fillStyle;
-				this.ctx.fillRect(this.x + this.parent.x, this.y + this.parent.y, this.width, this.height);
-			}
-	}
-
-	let defaultContent = 'Hello World!';
-	let defaultFillStyle$1 = 'white';
-	let defaultFont = '30px Comic Sans MS';
-
-	class TextEntity extends Entity{
-		constructor(opts){
-			super(opts);
-			this.content = opts.content || defaultContent;
-			this.fillStyle = opts.fillStyle || defaultFillStyle$1;
-			this.font = opts.font || defaultFont;
-			this.textAlign = opts.textAlign || 'center';
-		}
-		update(){
-			super.update();
-		}
-		render(){
-			super.render();
-			this.ctx.fillStyle = this.fillStyle;
-			this.ctx.font = this.font;
-			this.ctx.textAlign = this.textAlign;
-			this.ctx.fillText(this.content, this.x + this.parent.x, this.y + this.parent.y);
-		}
-	}
-
 	class Collider{
 		constructor(width, height){
 			this.broadPhase = new Quadtree(0, new Rect({x: 0, y: 0, width: width, height: height})); //Possibility of collider "interface", interchangable broadphase
@@ -123,11 +22,15 @@
 			this.broadPhase.insert(object);
 		}
 		remove(id){
+			let obj = -1;
 			for(let i = 0; i != this.objects.length; i++){
 				if(this.objects[i].id === id){
 					this.objects.splice(i, 1);
 					i--;
 				}
+			}
+			if(obj != -1){
+				this.reindex();
 			}
 		}
 		reindex(){
@@ -271,90 +174,141 @@
 		}
 	}
 
-	class Paddle extends RectEntity {
+	let id = 0;
+
+	class Entity {
 		constructor(opts){
-			super(opts);
-		}
-		update(ctx){
-			super.update(ctx);
-			if(ctx.keyManager.get('w')){
-				this.y -= 5;
-				
-				if(this.y < 0){
-					this.y = 0;
-				}
-			}else if(ctx.keyManager.get('s')){
-				this.y += 5;
-				if(this.y + this.height> this.stage.canvas.height){
-					player.y = this.stage.canvas.height - player.height;
-				}
+			if(!opts) throw "Need to provide options to init!";
+			if(this.constructor.name === 'Game') this.top = true;
+			if(!opts.parent && !this.top) throw "Need to provide parent to init!";
+			if(!this.top) this.parent = opts.parent;
+			this.ctx = opts.ctx || this.parent.ctx;
+			this.children = [];
+			this.x = opts.x || 0;
+			this.y = opts.y || 0;
+			this.id = opts.id || ++id;
+			this.stage = this;
+			while(this.stage.parent){
+				this.stage = this.stage.parent;
 			}
 		}
-	}
-
-	class GameScreen extends Entity{
-		constructor(opts){
-			super(opts);
-			this.addChild(new RectEntity({parent: this, width: this.ctx.canvas.width, height: this.ctx.canvas.height, fillStyle: 'black'}));
-			this.bluePaddle = new Paddle({parent: this});
-			this.addChild(this.bluePaddle);
-			this.addChild(new RectEntity({parent: this, width: 100, height: this.ctx.canvas.height / 4, fillStyle: 'blue', x: this.ctx.canvas.width - 20, y: this.ctx.canvas.width/2, id: 'bluePlayer'}));
-			this.addChild(new RectEntity({parent: this, width: 100, height: 100, fillStyle: 'red'}));
-		}
 		update(ctx){
-			super.update(ctx);	
-		}
-	}
-
-	class LoadingScreen extends Entity{
-		constructor(opts){
-			super(opts);
-			this.stage.collider.insert(new Rect({x: 0, y: 0, width: this.stage.canvas.width, height: this.stage.canvas.height, parent: this, id: 'loadingScreen'}));
-			this.addChild(new RectEntity({parent: this, width: this.ctx.canvas.width, height: this.ctx.canvas.height, fillStyle: 'black'}));
-			this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: this.ctx.canvas.height/3, textAlign: 'center', content: 'Boyce Ball', fillStyle: 'blue'}));
-			this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: (this.ctx.canvas.height)/2, textAlign: 'center', content: 'By Web Dev', font: '20px Comic Sans MS', fillStyle: 'red'}));
-			//this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: 3 * (this.ctx.canvas.height)/5, textAlign: 'center', content: 'Feel free to click around...', font: '9px Comic Sans MS', fillStyle: 'white'}));
-			this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: 3 * (this.ctx.canvas.height)/4, textAlign: 'center', content: 'Press the spacebar to continue...', font: '13px Comic Sans MS', fillStyle: 'grey'}));
-			
-		}
-		
-		update(ctx){
-			super.update(ctx);
-			if(ctx.keyManager.isChanged(' ')){
-				this.destroy();
+			for(let i = 0; i != this.children.length; i++){
+				this.children[i].update(ctx);
 			}
 		}
-		
-		onClick(data){
+		render(){
+			for(let i = 0; i != this.children.length; i++){
+				this.ctx.save();
+				this.children[i].render();
+				this.ctx.restore();
+			}
+		}
+		addChild(child){
+			this.children.push(child);
+		}
+		removeChild(id){
+			for(let i = 0; i != this.children.length; i++){
+				if(this.children[i].id === id){
+					 return this.children.splice(i, 1);
+				}
+			}
+			return -1;
+		}
+		onClick(){
 			
 		}
 		destroy(){
-				super.destroy();
-				this.stage.collider.remove('loadingScreen');
-				this.stage.addChild(new GameScreen({parent: this, x:0, y:0}));
+			while(this.children.length > 0){
+				this.children[0].destroy();
+			}
+			this.parent.removeChild(this.id);
+		}
+		getByID(id){
+			for(let i = 0; i != this.children.length; i++){
+				if(id == this.children[i].id) return this.children[i];
+			}
+			return -1;
+		}
+		insertEntity(name, opts){
+			this.children.push(new this.stage.entityDefs[name](opts));
+		}
+	}
+
+	let defaultWidth = 100;
+	let defaultHeight = 100;
+	let defaultFillStyle = 'white';
+
+	class RectEntity extends Entity{
+			constructor(opts){
+				super(opts);
+				this.width = opts.width || defaultWidth;
+				this.height = opts.height || defaultHeight;
+				this.fillStyle = opts.fillStyle || defaultFillStyle;
+			}
+			update(){
+				super.update();
+			}
+			render(){
+				super.render();
+				this.ctx.fillStyle = this.fillStyle;
+				this.ctx.fillRect(this.x + this.parent.x, this.y + this.parent.y, this.width, this.height);
+			}
+	}
+
+	let defaultContent = 'Hello World!';
+	let defaultFillStyle$1 = 'white';
+	let defaultFont = '30px Comic Sans MS';
+
+	class TextEntity extends Entity{
+		constructor(opts){
+			super(opts);
+			this.content = opts.content || defaultContent;
+			this.fillStyle = opts.fillStyle || defaultFillStyle$1;
+			this.font = opts.font || defaultFont;
+			this.textAlign = opts.textAlign || 'center';
+		}
+		update(){
+			super.update();
+		}
+		render(){
+			super.render();
+			this.ctx.fillStyle = this.fillStyle;
+			this.ctx.font = this.font;
+			this.ctx.textAlign = this.textAlign;
+			this.ctx.fillText(this.content, this.x + this.parent.x, this.y + this.parent.y);
 		}
 	}
 
 	let defaultFPS = 60;
 
-	class Game{
+	class Game extends Entity{
 		static get VERSION(){
 			return '0.0.1';
 		}
 		constructor(opts){
 			if(!opts) throw "Need to provide options to init game!"; //Might just create a canvas and everything
 			if(!opts.canvas) throw "Need to provide canvas element to init game!";
+			super({ctx: opts.canvas.getContext('2d')});
 			this.canvas = opts.canvas;
 			this.canvas.focus();
+			this.entityDefs = {
+				Entity: Entity,
+				RectEntity: RectEntity,
+				TextEntity: TextEntity
+			};
+			this.loader = new Loader(this);
+			if(opts.entities){
+				this.loadEntities(opts.entities).then(() => {
+					this.insertEntity('LoadingScreen', {parent: this});
+				});
+			}
 			this.settings = opts.settings || {}; //Global settings object
-			this.ctx = this.canvas.getContext('2d'); //Store a ctx for easy access
 			this.fps = opts.fps || defaultFPS; //Let users set fps. NOTE: Physics is set on fps so changing it will mess up eveything. Probably fun to watch though;
-			this.tree = []; //Should have just had it inherit from Entity. RIP
 			this.keyManager = new KeyManager(); //Slightly less messy than a global object for key states
-			this.top = true; //Way to tell parent apart from the rest
 			this.collider = new Collider(this.canvas.width, this.canvas.height); //Collider engine. Maybe make it replacable. or maybe allow it to be attached to entities. IDK.
 			this.start();
-			this.addChild(new LoadingScreen({parent: this})); //Loading screen for assets. This has no assets yet, so it just does a cute physics thing.
+			//this.addChild(new LoadingScreen({parent: this})); //Loading screen for assets. This has no assets yet, so it just does a cute physics thing.
 			this.canvas.addEventListener('mousedown', this.processClick.bind(this)); //Capture inputs
 			this.canvas.addEventListener('mouseup', this.processClick.bind(this));
 			this.canvas.addEventListener('contextmenu', function(e){
@@ -364,6 +318,12 @@
 			this.canvas.addEventListener('keydown', this.processKey.bind(this)); 
 			this.canvas.addEventListener('keyup', this.processKey.bind(this));
 				
+		}
+		async loadEntities(arr){
+			for(let i = 0; i != arr.length; i++){
+				let entity = await this.loader.loadEntitiy(arr[i]);
+				this.defineEntity(entity.name, entity);
+			}
 		}
 		loop(){
 			this.clearScreen();
@@ -377,28 +337,18 @@
 		}
 		update(ctx){
 			this.collider.reindex(); //Things might have moved. Maybe blurring the lines between entity and collider is a good idea, but ill keep them seperate for cimplicity for now
-			for(let i = 0; i < this.tree.length; i++){
-				this.tree[i].update(ctx);
+			for(let i = 0; i < this.children.length; i++){
+				this.children[i].update(ctx);
 			}
 		}
 		render(){
-			for(let i = 0; i != this.tree.length; i++){
+			for(let i = 0; i != this.children.length; i++){
 				this.ctx.save(); //So you can get a clean env each time
-				this.tree[i].render();
+				this.children[i].render();
 				this.ctx.restore();
 			}
 		}
-		addChild(child){
-			this.tree.push(child); //TODO: Id system
-		}
-		removeChild(id){
-			for(let i = 0; i != this.tree.length; i++){
-				if(this.tree[i].id === id){
-					 return this.tree.splice(i, 1); //Reomve and return if founnd
-				}
-			}
-			return -1; //Could not find child with specified id
-		}
+
 		getID(){
 			
 		}
@@ -465,6 +415,13 @@
 			this.halt();
 			this.start();
 		}
+		defineEntity(name, opt){
+			//Assume url for now
+			this.entityDefs[name] = opt;
+		}
+		getEntityDef(name){
+			return this.entityDefs[name] || -1;
+		}
 	}
 
 	class KeyManager{
@@ -509,10 +466,65 @@
 		}
 	}
 
+	class Loader{
+			constructor(game){
+				this.game = game;
+			}
+			loadEntitiy(url){
+				return new Promise((resolve, reject) => {
+					import(url).catch(function(err){
+						throw err;
+					}).then((module) => {
+						resolve(module.default(this.game));
+					});
+				});
+				/*return new Promise(function(resolve, reject){
+					fetch(url).catch(function(err){
+						throw err;
+					}).then(function(res){
+						return res.text();
+					}).catch(function(err){
+						throw err;
+					}).then(function(data){
+						let script = document.createElement('script');
+						script.onload = function(){
+							console.log(this, window.LoadingScreen);
+						}
+						document.body.append(script);
+						console.log(data);
+					});*/
+					/*
+					let script = document.createElement('script');
+					script.src = url;
+					script.onload = function(){
+						console.log(this);
+					};
+					document.body.append(script);
+				});*/
+			}
+	}
+
 	let VERSION = '0.0.1';
 
-	exports.VERSION = VERSION;
-	exports.Game = Game;
+	var landfill = /*#__PURE__*/Object.freeze({
+		VERSION: VERSION,
+		Game: Game
+	});
+
+	let VERSION$1 = '0.0.1';
+	class Game$1{
+		constructor(opts){
+			opts.entities = [
+				'./custom/LoadingScreen.js',
+				'./custom/GameScreen.js'
+			];
+			this.engine = new Game(opts);
+		}
+	}
+
+	exports.VERSION = VERSION$1;
+	exports.Game = Game$1;
+	exports.landfill = landfill;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 

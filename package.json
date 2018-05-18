@@ -4,7 +4,7 @@
   "description": "website",
   "main": "index.js",
   "dependencies": {
-    "fastify": "^0.34.0",
+    "fastify": "^1.4.0",
     "fastify-static": "^0.3.0"
   },
   "devDependencies": {},

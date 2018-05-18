@@ -1,26 +1,37 @@
-import {LoadingScreen} from './LoadingScreen.js';
 import {Collider, Rect} from './Collider.js';
+import {Entity} from './Entity.js';
+import {RectEntity} from './RectEntity.js';
+import {TextEntity} from './TextEntity.js';
 
 let defaultFPS = 60;
 
-export class Game{
+export class Game extends Entity{
 	static get VERSION(){
 		return '0.0.1';
 	}
 	constructor(opts){
 		if(!opts) throw "Need to provide options to init game!"; //Might just create a canvas and everything
 		if(!opts.canvas) throw "Need to provide canvas element to init game!";
+		super({ctx: opts.canvas.getContext('2d')});
 		this.canvas = opts.canvas;
 		this.canvas.focus();
+		this.entityDefs = {
+			Entity: Entity,
+			RectEntity: RectEntity,
+			TextEntity: TextEntity
+		};
+		this.loader = new Loader(this);
+		if(opts.entities){
+			this.loadEntities(opts.entities).then(() => {
+				this.insertEntity('LoadingScreen', {parent: this});
+			});
+		}
 		this.settings = opts.settings || {}; //Global settings object
-		this.ctx = this.canvas.getContext('2d'); //Store a ctx for easy access
 		this.fps = opts.fps || defaultFPS; //Let users set fps. NOTE: Physics is set on fps so changing it will mess up eveything. Probably fun to watch though;
-		this.tree = []; //Should have just had it inherit from Entity. RIP
 		this.keyManager = new KeyManager(); //Slightly less messy than a global object for key states
-		this.top = true; //Way to tell parent apart from the rest
 		this.collider = new Collider(this.canvas.width, this.canvas.height); //Collider engine. Maybe make it replacable. or maybe allow it to be attached to entities. IDK.
 		this.start();
-		this.addChild(new LoadingScreen({parent: this})); //Loading screen for assets. This has no assets yet, so it just does a cute physics thing.
+		//this.addChild(new LoadingScreen({parent: this})); //Loading screen for assets. This has no assets yet, so it just does a cute physics thing.
 		this.canvas.addEventListener('mousedown', this.processClick.bind(this)); //Capture inputs
 		this.canvas.addEventListener('mouseup', this.processClick.bind(this));
 		this.canvas.addEventListener('contextmenu', function(e){
@@ -30,6 +41,12 @@ export class Game{
 		this.canvas.addEventListener('keydown', this.processKey.bind(this)); 
 		this.canvas.addEventListener('keyup', this.processKey.bind(this));
 			
+	}
+	async loadEntities(arr){
+		for(let i = 0; i != arr.length; i++){
+			let entity = await this.loader.loadEntitiy(arr[i])
+			this.defineEntity(entity.name, entity);
+		}
 	}
 	loop(){
 		this.clearScreen();
@@ -43,28 +60,18 @@ export class Game{
 	}
 	update(ctx){
 		this.collider.reindex(); //Things might have moved. Maybe blurring the lines between entity and collider is a good idea, but ill keep them seperate for cimplicity for now
-		for(let i = 0; i < this.tree.length; i++){
-			this.tree[i].update(ctx);
+		for(let i = 0; i < this.children.length; i++){
+			this.children[i].update(ctx);
 		}
 	}
 	render(){
-		for(let i = 0; i != this.tree.length; i++){
+		for(let i = 0; i != this.children.length; i++){
 			this.ctx.save(); //So you can get a clean env each time
-			this.tree[i].render();
+			this.children[i].render();
 			this.ctx.restore();
 		}
 	}
-	addChild(child){
-		this.tree.push(child); //TODO: Id system
-	}
-	removeChild(id){
-		for(let i = 0; i != this.tree.length; i++){
-			if(this.tree[i].id === id){
-				 return this.tree.splice(i, 1); //Reomve and return if founnd
-			}
-		}
-		return -1; //Could not find child with specified id
-	}
+
 	getID(){
 		
 	}
@@ -131,6 +138,13 @@ export class Game{
 		this.halt();
 		this.start();
 	}
+	defineEntity(name, opt){
+		//Assume url for now
+		this.entityDefs[name] = opt;
+	}
+	getEntityDef(name){
+		return this.entityDefs[name] || -1;
+	}
 }
 
 class KeyManager{
@@ -173,4 +187,42 @@ class KeyManager{
 				return 'mouseRight';
 		}
 	}
+}
+
+class Loader{
+		constructor(game){
+			this.game = game;
+		}
+		loadEntitiy(url){
+			return new Promise((resolve, reject) => {
+				import(url).catch(function(err){
+					throw err;
+				}).then((module) => {
+					resolve(module.default(this.game));
+				});
+			});
+			/*return new Promise(function(resolve, reject){
+				fetch(url).catch(function(err){
+					throw err;
+				}).then(function(res){
+					return res.text();
+				}).catch(function(err){
+					throw err;
+				}).then(function(data){
+					let script = document.createElement('script');
+					script.onload = function(){
+						console.log(this, window.LoadingScreen);
+					}
+					document.body.append(script);
+					console.log(data);
+				});*/
+				/*
+				let script = document.createElement('script');
+				script.src = url;
+				script.onload = function(){
+					console.log(this);
+				};
+				document.body.append(script);
+			});*/
+		}
 }

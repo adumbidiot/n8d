@@ -1,13 +1,13 @@
 const fastify = require('fastify')();
 const fastifyStatic = require('fastify-static');
 const path = require('path');
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 fastify.register(fastifyStatic, {
 	root: path.join(__dirname, 'public')
 });
 
-fastify.listen(8888, function(err){
+fastify.listen(PORT, function(err){
 	if(err){
 		throw err;
 	}else{

@@ -3,16 +3,16 @@ let id = 0;
 export class Entity {
 	constructor(opts){
 		if(!opts) throw "Need to provide options to init!";
-		if(!opts.parent) throw "Need to provide parent to init!";
-		this.parent = opts.parent;
-		this.ctx = this.parent.ctx;
+		if(this.constructor.name === 'Game') this.top = true;
+		if(!opts.parent && !this.top) throw "Need to provide parent to init!";
+		if(!this.top) this.parent = opts.parent;
+		this.ctx = opts.ctx || this.parent.ctx;
 		this.children = [];
 		this.x = opts.x || 0;
 		this.y = opts.y || 0;
 		this.id = opts.id || ++id;
 		this.stage = this;
-		let stage = this;
-		while(!this.stage.top){
+		while(this.stage.parent){
 			this.stage = this.stage.parent;
 		}
 	}
@@ -52,5 +52,9 @@ export class Entity {
 		for(let i = 0; i != this.children.length; i++){
 			if(id == this.children[i].id) return this.children[i];
 		}
+		return -1;
+	}
+	insertEntity(name, opts){
+		this.children.push(new this.stage.entityDefs[name](opts));
 	}
 }
