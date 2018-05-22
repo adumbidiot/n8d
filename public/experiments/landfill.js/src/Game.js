@@ -33,7 +33,6 @@ export class Game extends Entity{
 		this.keyManager = new KeyManager(); //Slightly less messy than a global object for key states
 		this.collider = new Collider(this.canvas.width, this.canvas.height); //Collider engine. Maybe make it replacable. or maybe allow it to be attached to entities. IDK.
 		this.start();
-		//this.addChild(new LoadingScreen({parent: this})); //Loading screen for assets. This has no assets yet, so it just does a cute physics thing.
 		this.canvas.addEventListener('mousedown', this.processClick.bind(this)); //Capture inputs
 		this.canvas.addEventListener('mouseup', this.processClick.bind(this));
 		this.canvas.addEventListener('contextmenu', function(e){
@@ -60,7 +59,7 @@ export class Game extends Entity{
 		this.update(ctx);
 		this.render();
 		this.keyManager.resetChanged(); //Allow detection of sudden events or listen to changes
-		requestAnimationFrame(this.loop.bind(this));
+		//requestAnimationFrame(this.loop.bind(this));
 	}
 	clearScreen(){
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); //SSSHHHHH
@@ -125,8 +124,8 @@ export class Game extends Entity{
 		clearInterval(this.gameLoop);
 	}
 	start(){
-		//this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
-		requestAnimationFrame(this.loop.bind(this));
+		this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+		//requestAnimationFrame(this.loop.bind(this));
 	}
 	setFPS(fps){
 		this.fps = fps;

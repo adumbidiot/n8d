@@ -7,7 +7,7 @@ export default function(game){
 			super(opts);
 			this.vx = 3;
 			this.vy = 3;
-			this.collider = new Rect({x: 0, y:0, width: 2 * this.radius, height: 2 * this.radius});
+			this.collider = new Rect({x: this.x - this.radius, y: this.y - this.radius, width: 2 * this.radius, height: 2 * this.radius});
 		}
 		update(ctx){
 			super.update(ctx);
@@ -18,8 +18,8 @@ export default function(game){
 			}else if(this.y < 0){
 				this.vy *= -1;
 			}
-			this.collider.x = this.x;
-			this.collider.y = this.y;
+			this.collider.x = this.x - this.radius;
+			this.collider.y = this.y - this.radius;
 			let collisions = this.stage.collider.getCollisions(this.collider, {disableBroad: true});
 			if(collisions.length > 0){
 				this.vx *= -1;

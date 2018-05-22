@@ -7,7 +7,8 @@ export class Collider{
 		this.broadPhase = new Quadtree(0, new Rect({x: 0, y: 0, width: width, height: height})); //Possibility of collider "interface", interchangable broadphase
 		this.objects = []; //List of refs to all colliders regsitered
 		this.colliderDefs = {
-			Rect: Rect
+			Rect: Rect,
+			Circle: Circle
 		}
 	}
 	insert(collider){

@@ -1,8 +1,7 @@
 export default {
 	input: 'src/main.js',
-	experimentalDynamicImport: true,
 	output: {
-		file: 'dist/ChargedConflict.js',
+		file: 'ChargedConflict.js',
 		name: 'ChargedConflict',
 		format: 'umd'
 	}

@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>Charged Conflict</title>
+		<script src="ChargedConflict.js"></script>
+	</head>
+	<body>
+		<canvas width="640" height="480" id="canvas" tabindex='1'></canvas>
+		<div id="controls">
+			<button onclick="g.setFPS(0);">TURBO</button>
+			<button onclick="g.setFPS(60);">60FPS</button>
+			<button onclick="g.halt()">Halt</button>
+			<button onclick="console.log(g.tree[0].children[5].saveJSON());">Save</button>
+		</div>
+		<div id="debug"></div>
+		<div>
+			<h2>Testimonies</h2>
+			<ul>
+				<li>"Its pretty alright" -Michael Insongna</li>
+			</ul>
+		</div>
+		<script>
+			let debug = document.getElementById('debug');
+			console.log('Charged Conflict Version: ' + ChargedConflict.VERSION);
+			console.log('Charged Conflict Game Module Version: ' + ChargedConflict.Game.VERSION);
+			let g = new ChargedConflict.Game({canvas: document.getElementById('canvas')});
+		</script>
+	</body>
+</html>
