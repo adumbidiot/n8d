@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<title>Navbar</title>
+		<script src="/scripts/jquery-3.2.1.min.js"></script>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<script src="/scripts/popper.min.js"></script>
+		<script src="/scripts/bootstrap.min.js"></script>
+		<script src="/tags/navbar.tag" type="riot/tag"></script>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<script src="dist/n8d-navbar.js"></script>
+	</head>
+	<body>
+		<div id="nav"></div>
+		<script>
+			let nav = document.getElementById('nav');
+			const n = new n8dNavbar({
+				target: nav
+			});
+		</script>
+	</body>
+</html>

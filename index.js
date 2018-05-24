@@ -1,16 +1,16 @@
-const fastify = require('fastify')();
-const fastifyStatic = require('fastify-static');
-const path = require('path');
-const PORT = process.env.PORT || 8080;
+const polka = require('polka');
+const {join} = require('path');
+const serveStatic = require('serve-static');
+const sirv = require('sirv'); 
+//const {http} = require('uws');
+const http = require('http');
 
-fastify.register(fastifyStatic, {
-	root: path.join(__dirname, 'public')
-});
+const PORT = 8080;
+const dir = join(__dirname, 'public');
+const serve = serveStatic(dir);
 
-fastify.listen(PORT, function(err){
-	if(err){
-		throw err;
-	}else{
-		console.log('Server Running on port ' + PORT);
-	}
+const {handler} = polka().use(serve);
+	
+http.createServer(handler).listen(PORT, err => {
+	console.log(`> Running on localhost:${PORT}`);
 });

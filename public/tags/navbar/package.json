@@ -1,0 +1,16 @@
+{
+  "name": "navbar",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rollup.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "rollup": "^0.59.3",
+    "rollup-plugin-svelte": "^4.1.0",
+    "svelte": "^2.6.3"
+  }
+}
