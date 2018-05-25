@@ -9,7 +9,8 @@
 			this.broadPhase = new Quadtree(0, new Rect({x: 0, y: 0, width: width, height: height})); //Possibility of collider "interface", interchangable broadphase
 			this.objects = []; //List of refs to all colliders regsitered
 			this.colliderDefs = {
-				Rect: Rect
+				Rect: Rect,
+				Circle: Circle
 			};
 		}
 		insert(collider){
@@ -208,6 +209,21 @@
 		}
 	}
 
+	class Circle extends ColliderMask{
+		constructor(opts){
+			super(opts);
+			this.r = opts.r;
+			this.parent = opts.parent;
+			//this.type = this.constructor.name;
+		}
+		cast(type){
+			switch(type){
+				case Rect.name:
+					return new Rect({x: this.x, y: this.y, width: 2 * this.r, height: 2 * this.r, parent: this.parent});
+			}
+		}
+	}
+
 	let id = 0;
 
 	class Entity {
@@ -358,7 +374,6 @@
 			this.keyManager = new KeyManager(); //Slightly less messy than a global object for key states
 			this.collider = new Collider(this.canvas.width, this.canvas.height); //Collider engine. Maybe make it replacable. or maybe allow it to be attached to entities. IDK.
 			this.start();
-			//this.addChild(new LoadingScreen({parent: this})); //Loading screen for assets. This has no assets yet, so it just does a cute physics thing.
 			this.canvas.addEventListener('mousedown', this.processClick.bind(this)); //Capture inputs
 			this.canvas.addEventListener('mouseup', this.processClick.bind(this));
 			this.canvas.addEventListener('contextmenu', function(e){
@@ -385,7 +400,7 @@
 			this.update(ctx);
 			this.render();
 			this.keyManager.resetChanged(); //Allow detection of sudden events or listen to changes
-			requestAnimationFrame(this.loop.bind(this));
+			//requestAnimationFrame(this.loop.bind(this));
 		}
 		clearScreen(){
 			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); //SSSHHHHH
@@ -450,8 +465,8 @@
 			clearInterval(this.gameLoop);
 		}
 		start(){
-			//this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
-			requestAnimationFrame(this.loop.bind(this));
+			this.gameLoop = setInterval(this.loop.bind(this), 1000/this.fps); //Start Game Loop
+			//requestAnimationFrame(this.loop.bind(this));
 		}
 		setFPS(fps){
 			this.fps = fps;
