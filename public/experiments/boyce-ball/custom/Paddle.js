@@ -8,13 +8,13 @@ export default function(game){
 			this.width = 20;
 			this.team = opts.team || 'neutral';
 			switch(this.team){
-				case 'red':
-					this.fillStyle = 'red';
+				case 1:
+					this.fillStyle = 'orange';
 					this.triggerUp = 'ArrowUp';
 					this.triggerDown = 'ArrowDown';
 					break;
-				case 'blue':
-					this.fillStyle = 'blue';
+				case 2:
+					this.fillStyle = 'powderBlue';
 					this.triggerUp = 'w';
 					this.triggerDown = 's';
 					break;
@@ -37,6 +37,10 @@ export default function(game){
 			}
 			this.collider.x = this.x;
 			this.collider.y = this.y;
+		}
+		destroy(){
+			super.destroy();
+			this.stage.collider.remove(this.collider.id);
 		}
 	}
 }

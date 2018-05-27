@@ -3,6 +3,8 @@ import {Entity} from './Entity.js';
 import {RectEntity} from './RectEntity.js';
 import {TextEntity} from './TextEntity.js';
 import {CircleEntity} from './CircleEntity.js';
+import {ImageEntity} from './ImageEntity.js';
+import {Loader} from './Loader.js';
 
 let defaultFPS = 60;
 
@@ -20,13 +22,17 @@ export class Game extends Entity{
 			Entity: Entity,
 			RectEntity: RectEntity,
 			TextEntity: TextEntity,
-			CircleEntity: CircleEntity
+			CircleEntity: CircleEntity,
+			ImageEntity: ImageEntity
 		};
 		this.loader = new Loader(this);
 		if(opts.entities){
 			this.loadEntities(opts.entities).then(() => {
-				this.insertEntity('LoadingScreen', {parent: this});
+				this.insertEntity('LoadingScreen');
 			});
+		}
+		if(opts.assets){
+			this.loadAssets(opts.assets);
 		}
 		this.settings = opts.settings || {}; //Global settings object
 		this.fps = opts.fps || defaultFPS; //Let users set fps. NOTE: Physics is set on fps so changing it will mess up eveything. Probably fun to watch though;
@@ -47,6 +53,11 @@ export class Game extends Entity{
 		for(let i = 0; i != arr.length; i++){
 			let entity = await this.loader.loadEntitiy(arr[i])
 			this.defineEntity(entity.name, entity);
+		}
+	}
+	loadAssets(arr){
+		for(let i = 0; i != arr.length; i++){
+			this.loader.loadAsset(arr[i].url, arr[i].type);
 		}
 	}
 	loop(){
@@ -139,6 +150,9 @@ export class Game extends Entity{
 	getEntityDef(name){
 		return this.entityDefs[name] || -1;
 	}
+	log(str){
+		
+	}
 }
 
 class KeyManager{
@@ -181,19 +195,4 @@ class KeyManager{
 				return 'mouseRight';
 		}
 	}
-}
-
-class Loader{
-		constructor(game){
-			this.game = game;
-		}
-		loadEntitiy(url){
-			return new Promise((resolve, reject) => {
-				import(url).catch(function(err){
-					throw err;
-				}).then((module) => {
-					resolve(module.default(this.game));
-				});
-			});
-		}
 }

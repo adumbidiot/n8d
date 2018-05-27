@@ -17,7 +17,7 @@ export class Entity {
 		}
 	}
 	update(ctx){
-		for(let i = 0; i != this.children.length; i++){
+		for(let i = 0; i < this.children.length; i++){
 			this.children[i].update(ctx);
 		}
 	}
@@ -55,6 +55,16 @@ export class Entity {
 		return -1;
 	}
 	insertEntity(name, opts){
-		this.children.push(new this.stage.entityDefs[name](opts));
+		opts = opts || {};
+		if(!opts.parent) opts.parent = this;
+		let EntityDef = this.stage.entityDefs[name];
+		if(!EntityDef){
+			this.stage.halt();
+			console.error(name, opts);
+			return -1;
+		}
+		let child = new EntityDef(opts);
+		this.children.push(child);
+		return child;
 	}
 }

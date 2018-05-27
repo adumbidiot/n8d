@@ -1,0 +1,10 @@
+<script>
+	let a = new Promise(function(resolve, reject){
+	console.log('eval');
+		resolve('a');
+	});
+	console.log(a);
+	console.log(a.then(function(data){
+		console.log(data);
+	}));
+</script>

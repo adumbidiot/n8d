@@ -7,13 +7,13 @@ export default function(game){
 			super(opts);
 			this.vx = 3;
 			this.vy = 3;
-			this.ax = 0.002;
-			this.ay = 0.002;
+			this.ax = 0.0002;
+			this.ay = 0.0002;
 			this.width = 40;
-			this.height = 10;
+			this.height = 40;
 			this.collider = new Rect({x: this.x, y: this.y, width: this.width, height: this.height});
-			this.sprite = new Image();
-			this.sprite.src = "jacob.png";
+			this.sprite = game.loader.getAsset('./jacob.png');
+			this.bg = this.parent.getByID('boyce-bg');
 		}
 		update(ctx){
 			super.update(ctx);
@@ -22,7 +22,7 @@ export default function(game){
 			this.x += this.vx;
 			this.y += this.vy;
 			
-			if(this.y > this.ctx.canvas.height){
+			if(this.y + this.height > this.ctx.canvas.height){
 				this.vy *= -1;
 				this.ay *= -1;
 			}else if(this.y < 0){
@@ -36,10 +36,21 @@ export default function(game){
 			let collisions = this.stage.collider.getCollisions(this.collider, {disableBroad: true}); //Fix collisions
 			
 			if(collisions.length > 0){
-				this.vx *= -1;
-				this.ax *= -1;
+				if(this.x < this.ctx.canvas.width/2){
+					this.vx = Math.abs(this.vx);
+					this.ax = Math.abs(this.ax);
+				}else{
+					this.vx = -Math.abs(this.vx);
+					this.ax = -Math.abs(this.ax);
+				}
 			}
-			console.log(this.vx, this.vy);
+			if(this.x > this.ctx.canvas.width){
+				this.stage.insertEntity('StatsScreen', {winner: 1, angerLevel: this.bg.angerLevel, ballVX: this.vx});
+				this.parent.destroy();
+			}else if(this.x + this.width < 0){
+				this.stage.insertEntity('StatsScreen', {winner: 2, angerLevel: this.bg.angerLevel, ballVX: this.vx});
+				this.parent.destroy();
+			}
 		}
 		render(){
 			this.ctx.drawImage(this.sprite, this.x, this.y, this.width, this.height);
