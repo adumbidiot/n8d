@@ -16,7 +16,7 @@ export class Game{
 			{url: 'jacob1.png', type: 'img'},
 			{url: 'jacob2.png', type: 'img'},
 			{url: 'stock-photo-cyber-internet-robot-hacker-hacking-into-a-computer-to-steal-personal-data.png', type: 'img'},
-			{url: 'jacob_says.png', type: 'img'},
+			{url: 'stats.png', type: 'img'},
 			{url: 'Chill beat.m4a', type: 'audio'}
 		];
 		this.engine = new landfill.Game(opts);
