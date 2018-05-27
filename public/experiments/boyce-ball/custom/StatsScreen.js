@@ -9,7 +9,7 @@ export default function(game){
 			this.insertEntity('ImageEntity', {
 				width: this.ctx.canvas.width, 
 				height: this.ctx.canvas.height, 
-				img: game.loader.getAsset('Jacob Says.png')
+				img: game.loader.getAsset('jacob_says.png')
 			});
 			
 			this.insertEntity('TextEntity', {
