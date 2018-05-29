@@ -243,7 +243,7 @@
 			}
 		}
 		update(ctx){
-			for(let i = 0; i != this.children.length; i++){
+			for(let i = 0; i < this.children.length; i++){
 				this.children[i].update(ctx);
 			}
 		}
@@ -281,7 +281,17 @@
 			return -1;
 		}
 		insertEntity(name, opts){
-			this.children.push(new this.stage.entityDefs[name](opts));
+			opts = opts || {};
+			if(!opts.parent) opts.parent = this;
+			let EntityDef = this.stage.entityDefs[name];
+			if(!EntityDef){
+				this.stage.halt();
+				console.error(name, opts);
+				return -1;
+			}
+			let child = new EntityDef(opts);
+			this.children.push(child);
+			return child;
 		}
 	}
 
@@ -345,6 +355,96 @@
 			}
 	}
 
+	class ImageEntity extends RectEntity{
+		constructor(opts){
+			super(opts);
+			if(!opts.img) throw "no image";
+			this.img = opts.img;
+			this.sprite = document.createElement('canvas');
+			this.sprite.width = this.width;
+			this.sprite.height = this.height;
+			this.setImage(this.img);
+		}
+		render(){
+			this.ctx.drawImage(this.sprite, this.x, this.y);
+		}
+		setImage(img){
+			let ctx = this.sprite.getContext('2d');
+			this.img = img;
+			ctx.clearRect(0, 0, this.sprite.width, this.sprite.height);
+			ctx.drawImage(this.img, 0, 0, this.width, this.height);
+		}
+	}
+
+	class Loader{
+		constructor(game){
+			this.game = game;
+			this.assetLib = {};
+			this.assetTypes = {
+				img: LoaderImageEntry,
+				audio: LoaderAudioEntry
+			};
+		}
+		loadEntitiy(url){
+			return new Promise((resolve, reject) => {
+				import(url).catch(function(err){
+					throw err;
+				}).then((module) => {
+					resolve(module.default(this.game));
+				});
+			});
+		}
+		loadAsset(url, type){
+			let resolvedEntry = this.assetTypes[type] || LoaderEntryBase;
+			url = this.resolveURL(url);
+			this.assetLib[url] = new resolvedEntry(url);
+		}
+		getAsset(url){
+			url = this.resolveURL(url);
+			return this.assetLib[url].data;
+		}
+		resolveURL(url){
+			let a = document.createElement('a');
+			a.href = url;
+			return a.href;
+		}
+		allLoaded(){
+			let keys = Object.keys(this.assetLib);
+			for(let i = 0; i < keys.length; i++){
+				//console.log(this.assetLib[keys[i]].loaded);
+				if(!this.assetLib[keys[i]].loaded) return false;
+			}
+			return true;
+		}
+	}
+
+	class LoaderEntryBase{
+		constructor(url){
+			this.url = url;
+			this.loaded = false;
+			console.log(this.constructor);
+		}
+	}
+
+	class LoaderImageEntry extends LoaderEntryBase{
+		constructor(url){
+			super(url);
+			this.data = new Image();
+			this.data.src = url;
+			this.data.onload = () => {
+				this.loaded = true;
+			};
+		}
+	}
+
+	class LoaderAudioEntry extends LoaderEntryBase{
+		constructor(url){
+			super(url);
+			this.data = new Audio(url);
+			this.loaded = true;
+		}
+	}
+
 	let defaultFPS = 60;
 
 	class Game extends Entity{
@@ -361,13 +461,17 @@
 				Entity: Entity,
 				RectEntity: RectEntity,
 				TextEntity: TextEntity,
-				CircleEntity: CircleEntity
+				CircleEntity: CircleEntity,
+				ImageEntity: ImageEntity
 			};
 			this.loader = new Loader(this);
 			if(opts.entities){
 				this.loadEntities(opts.entities).then(() => {
-					this.insertEntity('LoadingScreen', {parent: this});
+					this.insertEntity('LoadingScreen');
 				});
+			}
+			if(opts.assets){
+				this.loadAssets(opts.assets);
 			}
 			this.settings = opts.settings || {}; //Global settings object
 			this.fps = opts.fps || defaultFPS; //Let users set fps. NOTE: Physics is set on fps so changing it will mess up eveything. Probably fun to watch though;
@@ -388,6 +492,11 @@
 			for(let i = 0; i != arr.length; i++){
 				let entity = await this.loader.loadEntitiy(arr[i]);
 				this.defineEntity(entity.name, entity);
+			}
+		}
+		loadAssets(arr){
+			for(let i = 0; i != arr.length; i++){
+				this.loader.loadAsset(arr[i].url, arr[i].type);
 			}
 		}
 		loop(){
@@ -480,6 +589,9 @@
 		getEntityDef(name){
 			return this.entityDefs[name] || -1;
 		}
+		log(str){
+			
+		}
 	}
 
 	class KeyManager{
@@ -522,21 +634,6 @@
 					return 'mouseRight';
 			}
 		}
-	}
-
-	class Loader{
-			constructor(game){
-				this.game = game;
-			}
-			loadEntitiy(url){
-				return new Promise((resolve, reject) => {
-					import(url).catch(function(err){
-						throw err;
-					}).then((module) => {
-						resolve(module.default(this.game));
-					});
-				});
-			}
 	}
 
 	let VERSION = '0.0.1';

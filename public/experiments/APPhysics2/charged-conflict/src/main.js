@@ -1,4 +1,4 @@
-import * as landfill from '../../../../landfill.js/dist/landfill.js';
+import * as landfill from '../../../landfill.js/dist/landfill.js';
 export let VERSION = '0.0.1';
 export class Game{
 	constructor(opts){

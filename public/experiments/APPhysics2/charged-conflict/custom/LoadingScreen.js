@@ -16,7 +16,7 @@ return class LoadingScreen extends Entity{
 		this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: (this.ctx.canvas.height)/2, textAlign: 'center', content: 'By ADumbIdiot', font: '20px Comic Sans MS', fillStyle: 'red'}));
 		this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: 3 * (this.ctx.canvas.height)/5, textAlign: 'center', content: 'Feel free to click around...', font: '9px Comic Sans MS', fillStyle: 'white'}));
 		this.addChild(new TextEntity({parent: this, x: this.ctx.canvas.width/2, y: 3 * (this.ctx.canvas.height)/4, textAlign: 'center', content: 'Press the spacebar to continue...', font: '13px Comic Sans MS', fillStyle: 'grey'}));
-		this.chargeSim = new ChargeParent({parent: this});
+		this.chargeSim = this.insertEntity('ChargeParent');
 		
 		this.addPositive({x: 100, y: 100});
 		this.addNegative({x: 150, y: 200});
@@ -36,12 +36,20 @@ return class LoadingScreen extends Entity{
 	}
 	
 	onClick(data){
+		let num = 1;
+		if(game.keyManager.get('w')){
+			num = 100;
+		}
 		if(data.key === 3){
 			//this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: data.x, y: data.y, charge: -0.0001}));
-			this.addNegative({x: data.x, y: data.y});
+			for(let i = 0; i != num; i++){
+				this.addNegative({x: data.x, y: data.y});
+			}
 		}else if(data.key === 1){
 			//this.chargeSim.addChild(new Charge({parent: this.chargeSim, x: data.x, y: data.y, charge: 0.0001}));
-			this.addPositive({x: data.x, y: data.y});
+			for(let i = 0; i != num; i++){
+				this.addPositive({x: data.x, y: data.y});
+			}
 		}else if(data.key === 2){
 			this.addChild(new CircleEntity({x: data.x, y: data.y, radius: 10, parent: this, fillStyle: 'grey'}));
 		}
