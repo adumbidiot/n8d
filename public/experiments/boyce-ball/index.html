@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 	<head>
 		<title>Boyce Ball</title>
 		<script src="BoyceBall.js"></script>
@@ -9,10 +9,13 @@
 			<button onclick="g.engine.setFPS(0);">TURBO</button>
 			<button onclick="g.engine.setFPS(60);">60FPS</button>
 			<button onclick="g.engine.halt()">Halt</button>
+			<button onclick="canvas.webkitRequestFullScreen()">Fullscreen</button>
 		</div>
 		<div id="debug"></div>
 		<div>https://developers.google.com/web/updates/2017/11/dynamic-import</div>
 		<script>
+let canvas = document.getElementById('canvas');
+console.log(canvas);
 			let debug = document.getElementById('debug');
 			console.log('🏀 Boyce Ball Version: ' + BoyceBall.VERSION);
 			console.log('🗑️ Landfill Version: ' + BoyceBall.landfill.VERSION);

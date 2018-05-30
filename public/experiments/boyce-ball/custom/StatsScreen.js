@@ -34,7 +34,7 @@ export default function(game){
 				x: this.ctx.canvas.width/2, 
 				y: 4 * (this.ctx.canvas.height)/7, 
 				textAlign: 'center', 
-				content: 'Jacob moved at velocity ' + Math.abs(opts.ballVX.toFixed(2)), 
+				content: 'Jacob moved at speed ' + Math.abs(opts.ballVX.toFixed(2)), 
 				font: '20px Comic Sans MS', 
 				fillStyle: 'green'
 			});

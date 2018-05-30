@@ -15,8 +15,7 @@ export default function(game){
 				fillStyle: 'rgb(' + this.red + ' ,0 ,0)'
 			});
 			
-			this.display = this.insertEntity('ImageEntity', {
-				parent: this, 
+			this.display = this.insertEntity('ImageEntity', { 
 				img: game.loader.getAsset('./jacob.png'), 
 				width: this.ctx.canvas.width, 
 				height: this.ctx.canvas.height
@@ -47,6 +46,10 @@ export default function(game){
 				this.angerLevel++;
 				this.red = Math.min(this.red + 20, 255);
 				this.display_color.fillStyle = 'rgb(' + this.red + ' ,0 ,0)';
+			}
+			if(this.angerLevel === 100){
+				game.loader.getAsset('BFG.mp3', 'audio').play();
+			
 			}
 		}
 	}

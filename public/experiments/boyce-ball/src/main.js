@@ -17,12 +17,18 @@ export class Game{
 			{url: 'jacob2.png', type: 'img'},
 			{url: 'stock-photo-cyber-internet-robot-hacker-hacking-into-a-computer-to-steal-personal-data.png', type: 'img'},
 			{url: 'stats.png', type: 'img'},
-			{url: 'Chill beat.m4a', type: 'audio'}
+			{url: 'Chill beat.m4a', type: 'audio'},
+			{url: 'BFG.mp3',type:'audio'}
 		];
 		this.engine = new landfill.Game(opts);
 		this.engine.log = function(str){
 			console.log(str);
 		}
 	}
+	setAngerLvl(lvl){
+		this.engine.children[0].getByID('boyce-bg').angerLevel = lvl;
+		
+	}
 }
+
 export {landfill};

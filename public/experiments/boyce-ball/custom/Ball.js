@@ -5,8 +5,8 @@ export default function(game){
 	return class Ball extends RectEntity{
 		constructor(opts){
 			super(opts);
-			this.vx = 3;
-			this.vy = 3;
+			this.vx = 3.5;
+			this.vy = 3.5;
 			this.ax = 0.0002;
 			this.ay = 0.0002;
 			this.width = 40;

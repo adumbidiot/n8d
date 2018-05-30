@@ -16,7 +16,7 @@ export default function(game){
 			this.insertEntity('Ball', {parent: this});
 			
 			this.insertEntity('FPSCounter', {parent: this});
-			game.loader.getAsset('Chill beat.m4a', 'audio').play();
+			//game.loader.getAsset('Chill beat.m4a', 'audio').play();
 		}
 	}
 }

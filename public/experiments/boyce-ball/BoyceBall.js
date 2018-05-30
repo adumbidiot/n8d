@@ -26,15 +26,11 @@
 			this.broadPhase.insert(object);
 		}
 		remove(id){
-			let obj = -1;
 			for(let i = 0; i != this.objects.length; i++){
 				if(this.objects[i].id === id){
 					this.objects.splice(i, 1);
 					i--;
 				}
-			}
-			if(obj != -1){
-				this.reindex();
 			}
 		}
 		reindex(){
@@ -661,12 +657,17 @@
 				{url: 'jacob2.png', type: 'img'},
 				{url: 'stock-photo-cyber-internet-robot-hacker-hacking-into-a-computer-to-steal-personal-data.png', type: 'img'},
 				{url: 'stats.png', type: 'img'},
-				{url: 'Chill beat.m4a', type: 'audio'}
+				{url: 'Chill beat.m4a', type: 'audio'},
+				{url: 'BFG.mp3',type:'audio'}
 			];
 			this.engine = new Game(opts);
 			this.engine.log = function(str){
 				console.log(str);
 			};
+		}
+		setAngerLvl(lvl){
+			this.engine.children[0].getByID('boyce-bg').angerLevel = lvl;
+			
 		}
 	}
 
