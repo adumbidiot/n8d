@@ -47,9 +47,9 @@ export default function(game){
 				this.red = Math.min(this.red + 20, 255);
 				this.display_color.fillStyle = 'rgb(' + this.red + ' ,0 ,0)';
 			}
-			if(this.angerLevel === 100){
-				game.loader.getAsset('BFG.mp3', 'audio').play();
-			
+			if(this.angerLevel === 90){
+				game.audioManager.stopAll();
+				game.audioManager.play(game.loader.getAsset('BFG.mp3', 'audio'));
 			}
 		}
 	}

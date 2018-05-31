@@ -37,6 +37,8 @@ export default function(game){
 				fillStyle: 'pink'
 			});
 			
+			this.insertEntity('AssetCounter');
+			
 		}
 		
 		update(ctx){

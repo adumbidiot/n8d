@@ -26,11 +26,15 @@
 			this.broadPhase.insert(object);
 		}
 		remove(id){
+			let obj = -1;
 			for(let i = 0; i != this.objects.length; i++){
 				if(this.objects[i].id === id){
 					this.objects.splice(i, 1);
 					i--;
 				}
+			}
+			if(obj != -1){
+				this.reindex();
 			}
 		}
 		reindex(){
@@ -373,8 +377,8 @@
 	}
 
 	class Loader{
-		constructor(game){
-			this.game = game;
+		constructor(gameOption){
+			this.game = gameOption;
 			this.assetLib = {};
 			this.assetTypes = {
 				img: LoaderImageEntry,
@@ -393,7 +397,7 @@
 		loadAsset(url, type){
 			let resolvedEntry = this.assetTypes[type] || LoaderEntryBase;
 			url = this.resolveURL(url);
-			this.assetLib[url] = new resolvedEntry(url);
+			this.assetLib[url] = new resolvedEntry(this.game, url);
 		}
 		getAsset(url){
 			url = this.resolveURL(url);
@@ -405,26 +409,33 @@
 			return a.href;
 		}
 		allLoaded(){
+			if(this.getLoadedNum() === this.getAssetNum()) return true;
+			return false
+		}
+		getAssetNum(){
+			return Object.keys(this.assetLib).length;
+		}
+		getLoadedNum(){
+			let num = 0;
 			let keys = Object.keys(this.assetLib);
 			for(let i = 0; i < keys.length; i++){
-				//console.log(this.assetLib[keys[i]].loaded);
-				if(!this.assetLib[keys[i]].loaded) return false;
+				if(this.assetLib[keys[i]].loaded) num++;
 			}
-			return true;
+			return num;
 		}
 	}
 
 	class LoaderEntryBase{
-		constructor(url){
+		constructor(game, url){
 			this.url = url;
 			this.loaded = false;
-			console.log(this.constructor);
+			//console.log(this.constructor);
 		}
 	}
 
 	class LoaderImageEntry extends LoaderEntryBase{
-		constructor(url){
-			super(url);
+		constructor(game, url){
+			super(game, url);
 			this.data = new Image();
 			this.data.src = url;
 			this.data.onload = () => {
@@ -434,10 +445,50 @@
 	}
 
 	class LoaderAudioEntry extends LoaderEntryBase{
-		constructor(url){
-			super(url);
-			this.data = new Audio(url);
-			this.loaded = true;
+		constructor(game, url){
+			super(game, url);
+			fetch(url).catch((err) => {
+				
+			}).then((response) => {
+				return response.arrayBuffer();
+			}).catch((err) => {
+				console.error(err);
+			}).then((data) => {
+				return game.audioManager.decodeAudio(data);
+			}).catch((err) => {
+				console.error(err);
+			}).then((buf) => {
+				this.data = buf;
+				this.loaded = true;
+			});
+		}
+	}
+
+	class AudioManager{
+		constructor(){
+			let AudioContext = window.AudioContext || window.webkitAudioContext;
+			this.context = new AudioContext();
+			this.sounds = [];
+		}
+		play(buffer){
+			let source = this.context.createBufferSource();
+			source.buffer = buffer;
+			source.connect(this.context.destination);
+			source.start(0);
+			console.log('s');
+			this.sounds.push(source);
+		}
+		stopAll(){
+			for(let i = 0; i != this.sounds.length; i++){
+				this.sounds[i].stop();
+			}
+		}
+		decodeAudio(buf){
+			return new Promise((resolve, reject) => {
+				this.context.decodeAudioData(buf, function(buffer){
+					resolve(buffer);
+				});
+			});
 		}
 	}
 
@@ -461,6 +512,8 @@
 				ImageEntity: ImageEntity
 			};
 			this.loader = new Loader(this);
+			this.audioManager = new AudioManager();
+			this.fullscreenData = {};
 			if(opts.entities){
 				this.loadEntities(opts.entities).then(() => {
 					this.insertEntity('LoadingScreen');
@@ -588,6 +641,21 @@
 		log(str){
 			
 		}
+		fullscreen(){
+			this.canvas.addEventListener('webkitfullscreenchange', (e) => {
+				if(document.webkitFullscreenElement === null){
+					this.log('[GAME] Exited Fullscreen');
+					this.canvas.style.height = this.fullscreenData.height;
+				}else{
+					this.log('[GAME] Entered Fullscreen');
+					this.fullscreenData.height = this.canvas.style.height;
+					this.canvas.style.height = '100%';
+				}
+			});
+			
+			this.canvas.webkitRequestFullscreen();
+			
+		}
 	}
 
 	class KeyManager{
@@ -649,7 +717,9 @@
 				'./custom/GameScreen.js',
 				'./custom/Paddle.js',
 				'./custom/StatsScreen.js',
-				'./custom/Ball.js'
+				'./custom/Ball.js',
+				'./custom/AngerCounter.js',
+				'./custom/AssetCounter.js'
 			];
 			opts.assets = [
 				{url: 'jacob.png', type: 'img'},

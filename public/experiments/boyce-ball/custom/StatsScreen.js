@@ -30,11 +30,16 @@ export default function(game){
 				fillStyle: 'red'
 			});
 			
+			let speedE = '';
+			for(let i = 0; i < (opts.angerLevel / 10) | 0; i++){
+				speedE += 'e';
+			}
+			
 			this.insertEntity('TextEntity', {
 				x: this.ctx.canvas.width/2, 
 				y: 4 * (this.ctx.canvas.height)/7, 
 				textAlign: 'center', 
-				content: 'Jacob moved at speed ' + Math.abs(opts.ballVX.toFixed(2)), 
+				content: 'Jacob moved at sp' + speedE + 'd ' + Math.abs(opts.ballVX.toFixed(2)), 
 				font: '20px Comic Sans MS', 
 				fillStyle: 'green'
 			});

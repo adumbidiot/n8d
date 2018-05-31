@@ -11,12 +11,13 @@ export default function(game){
 			});
 			
 			let vMid = (this.ctx.canvas.height - 100) / 2;
-			this.insertEntity('Paddle', {parent: this, x: 20, team: 2, height: 100, y: vMid});
-			this.insertEntity('Paddle', {parent: this, x: this.ctx.canvas.width - 40, y: vMid, team: 1, height: 100});
-			this.insertEntity('Ball', {parent: this});
+			this.insertEntity('Paddle', {x: 20, team: 2, height: 100, y: vMid});
+			this.insertEntity('Paddle', {x: this.ctx.canvas.width - 40, y: vMid, team: 1, height: 100});
+			this.insertEntity('Ball');
 			
-			this.insertEntity('FPSCounter', {parent: this});
-			//game.loader.getAsset('Chill beat.m4a', 'audio').play();
+			this.insertEntity('FPSCounter');
+			this.insertEntity('AngerCounter');
+			game.audioManager.play(game.loader.getAsset('Chill beat.m4a', 'audio'));
 		}
 	}
 }

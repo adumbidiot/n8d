@@ -5,7 +5,7 @@ const sirv = require('sirv');
 //const {http} = require('uws');
 const http = require('http');
 
-const PORT = 8888;
+const PORT = 8080;
 const dir = join(__dirname, 'public');
 const serve = serveStatic(dir);
 

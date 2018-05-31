@@ -5,6 +5,7 @@ import {TextEntity} from './TextEntity.js';
 import {CircleEntity} from './CircleEntity.js';
 import {ImageEntity} from './ImageEntity.js';
 import {Loader} from './Loader.js';
+import {AudioManager} from './AudioManager.js';
 
 let defaultFPS = 60;
 
@@ -26,6 +27,8 @@ export class Game extends Entity{
 			ImageEntity: ImageEntity
 		};
 		this.loader = new Loader(this);
+		this.audioManager = new AudioManager();
+		this.fullscreenData = {};
 		if(opts.entities){
 			this.loadEntities(opts.entities).then(() => {
 				this.insertEntity('LoadingScreen');
@@ -151,6 +154,21 @@ export class Game extends Entity{
 		return this.entityDefs[name] || -1;
 	}
 	log(str){
+		
+	}
+	fullscreen(){
+		this.canvas.addEventListener('webkitfullscreenchange', (e) => {
+			if(document.webkitFullscreenElement === null){
+				this.log('[GAME] Exited Fullscreen');
+				this.canvas.style.height = this.fullscreenData.height;
+			}else{
+				this.log('[GAME] Entered Fullscreen');
+				this.fullscreenData.height = this.canvas.style.height;
+				this.canvas.style.height = '100%';
+			}
+		});
+		
+		this.canvas.webkitRequestFullscreen();
 		
 	}
 }

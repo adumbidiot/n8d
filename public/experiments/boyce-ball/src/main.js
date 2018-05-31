@@ -9,7 +9,9 @@ export class Game{
 			'./custom/GameScreen.js',
 			'./custom/Paddle.js',
 			'./custom/StatsScreen.js',
-			'./custom/Ball.js'
+			'./custom/Ball.js',
+			'./custom/AngerCounter.js',
+			'./custom/AssetCounter.js'
 		];
 		opts.assets = [
 			{url: 'jacob.png', type: 'img'},

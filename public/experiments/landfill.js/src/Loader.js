@@ -1,6 +1,6 @@
 export class Loader{
-	constructor(game){
-		this.game = game;
+	constructor(gameOption){
+		this.game = gameOption;
 		this.assetLib = {};
 		this.assetTypes = {
 			img: LoaderImageEntry,
@@ -19,7 +19,7 @@ export class Loader{
 	loadAsset(url, type){
 		let resolvedEntry = this.assetTypes[type] || LoaderEntryBase;
 		url = this.resolveURL(url);
-		this.assetLib[url] = new resolvedEntry(url);
+		this.assetLib[url] = new resolvedEntry(this.game, url);
 	}
 	getAsset(url){
 		url = this.resolveURL(url);
@@ -31,26 +31,33 @@ export class Loader{
 		return a.href;
 	}
 	allLoaded(){
+		if(this.getLoadedNum() === this.getAssetNum()) return true;
+		return false
+	}
+	getAssetNum(){
+		return Object.keys(this.assetLib).length;
+	}
+	getLoadedNum(){
+		let num = 0;
 		let keys = Object.keys(this.assetLib);
 		for(let i = 0; i < keys.length; i++){
-			//console.log(this.assetLib[keys[i]].loaded);
-			if(!this.assetLib[keys[i]].loaded) return false;
+			if(this.assetLib[keys[i]].loaded) num++;
 		}
-		return true;
+		return num;
 	}
 }
 
 class LoaderEntryBase{
-	constructor(url){
+	constructor(game, url){
 		this.url = url;
 		this.loaded = false;
-		console.log(this.constructor);
+		//console.log(this.constructor);
 	}
 }
 
 class LoaderImageEntry extends LoaderEntryBase{
-	constructor(url){
-		super(url);
+	constructor(game, url){
+		super(game, url);
 		this.data = new Image();
 		this.data.src = url;
 		this.data.onload = () => {
@@ -60,9 +67,21 @@ class LoaderImageEntry extends LoaderEntryBase{
 }
 
 class LoaderAudioEntry extends LoaderEntryBase{
-	constructor(url){
-		super(url);
-		this.data = new Audio(url);
-		this.loaded = true;
+	constructor(game, url){
+		super(game, url);
+		fetch(url).catch((err) => {
+			
+		}).then((response) => {
+			return response.arrayBuffer();
+		}).catch((err) => {
+			console.error(err);
+		}).then((data) => {
+			return game.audioManager.decodeAudio(data);
+		}).catch((err) => {
+			console.error(err);
+		}).then((buf) => {
+			this.data = buf;
+			this.loaded = true;
+		});
 	}
 }
