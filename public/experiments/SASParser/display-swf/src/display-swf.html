@@ -1,0 +1,80 @@
+<style>
+	.main{
+		width: 100%;
+		height: 100%;
+		background-color: black;
+		position: relative;
+	}
+	.output{
+		color: green; 
+		overflow: auto; 
+		overflow-y: scroll; 
+		position: absolute; 
+		width: 100%; 
+		top: 3rem; 
+		bottom: 0rem;
+	}
+</style>
+<div>
+	<div class="main">
+		<DisplaySWFNav on:nav="onNav(event)"></DisplaySWFNav>
+		{#if displayStartInfo}
+			<div style="color:green; top: 3rem; position: absolute; overflow-y: scroll; width: 100%; bottom: 0rem;">
+				<div>
+					<b>[ STATS ]</b>
+				</div>
+				<div>SWFTools Version {SWFTools.VERSION}</div>
+				<div>SWFParser Version {SWFTools.SWFParser.VERSION}</div>
+				<div>Start Time: {startTime}</div>
+				<div>End Time: {endTime}</div>
+				<div>Start Epoch Time: {startTime.getTime()}ms</div>
+				<div>End Epoch Time: {endTime.getTime()}ms</div>
+				<div>Parse Time: {parseTime}ms</div>
+				<div>Tags Per Millisecond: {tps} tags/ms</div>
+				<div>Tags Parsed: {tagsParsed} tags</div>
+				<div><b>[ /STATS ]</b></div>
+				<br>
+				<div><b>[ BODY ]</b></div>
+				{#each swfTags as tag}
+					<details>
+						<summary>
+							{name} (code={recordHeader.code})
+						</summary>
+						<p>WIP</p>
+					</details>
+				{/each}
+				<div><b>[ /BODY ]</b></div>
+				<div ref="output"></div>
+			</div>
+		{/if}
+	</div>
+</div>
+<script>
+	import DisplaySWFNav from './display-swf-nav.html';
+	function getNewParser(SWFTools){
+		return new SWFTools.SWFParser();
+	}
+	
+	export default {
+		components: {
+			DisplaySWFNav
+		},
+		methods: {
+			onNav(e){
+				const url = e.url;
+				const {parser} = this.get();
+				console.log(parser);
+				SWFTools.fetchAndParse(parser, url);
+			}
+			
+		},
+		data(){
+			return {
+				SWFTools: SWFTools
+			}
+		},
+		computed: {
+			parser: ({SWFTools}) => getNewParser(SWFTools)
+		}
+	};
+</script>

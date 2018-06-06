@@ -6,7 +6,7 @@ export default {
   output: {
     file: 'dist/display-swf.js',
     format: 'iife',
-	name: 'n8dNavbar'
+	name: 'DisplaySWF'
   },
   plugins: [
     svelte()

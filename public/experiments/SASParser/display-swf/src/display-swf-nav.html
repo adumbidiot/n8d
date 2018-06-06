@@ -1,0 +1,59 @@
+<style>
+	.nav{
+		width: 100%; 
+		height: 3rem; 
+		background-color: grey;
+		position: static;
+		float: right;
+		display: inline;
+	
+	}
+	.nav-item{
+		height: 2rem;
+		left: 0.5rem;
+		top: 0.5rem;
+		position: relative;
+	}
+	.nav-input{
+		width: 12rem;
+		border: 0px;
+		border-top-right-radius: 1rem;
+		border-bottom-right-radius: 1rem;
+		outline: none;
+	}
+	.nav-button{
+		background-color: green; 
+		width: 6rem; 
+		float:left;  
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		user-select: none;
+		border-top-left-radius: 1rem;
+		border-bottom-left-radius: 1rem;
+	}
+	.nav-button:active{
+		background-color: #00FF00;
+	}
+</style>
+<div class="nav">
+	<input type="text" bind:value=navURL class="nav-input nav-item">
+	<div class="nav-button nav-item" on:click="go(event)">
+		<p style="color: #00FF00;">Go</p>
+	</div>
+</div>
+<script>
+	export default {
+		data(){
+			return {
+				navURL: 'games/pong.swf'
+			}
+		},
+		methods: {
+			go(event){
+				const url = this.get().navURL;
+				this.fire('nav', {url});
+			}
+		}
+	}
+</script>
