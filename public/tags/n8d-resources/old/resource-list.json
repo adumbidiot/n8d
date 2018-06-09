@@ -1,0 +1,22 @@
+[
+	{
+		"url": "https://google.com",
+		"label": "Google"
+	},
+	{
+		"url": "http://martinmuzatko.github.io/riot-cheatsheet/",
+		"label": "Riot Cheatsheet"
+	},
+	{
+		"url": "http://www.color-hex.com/color-palette/1718",
+		"label": "Color Scheme"
+	},
+	{
+		"url": "https://github.com/riot/examples/tree/gh-pages/rollup",
+		"label": "Example Build System"
+	},
+	{
+		"url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transition-duration",
+		"label": "Transition Duration CSS MDN"
+	}
+]

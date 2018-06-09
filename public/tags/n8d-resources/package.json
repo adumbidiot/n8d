@@ -1,0 +1,24 @@
+{
+  "name": "n8d-resources",
+  "version": "1.0.0",
+  "description": "resources tag",
+  "main": "rollup.config.js",
+  "dependencies": {
+    "riot-compiler": "^3.5.1",
+    "rollup": "^0.59.4",
+    "rollup-plugin-riot": "^2.0.0",
+    "rollup-plugin-svelte": "^4.1.0",
+    "svelte": "^2.7.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "resources",
+    "tag",
+    "svelte"
+  ],
+  "author": "nano",
+  "license": "ISC"
+}
