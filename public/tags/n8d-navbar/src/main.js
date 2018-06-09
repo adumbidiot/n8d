@@ -1,2 +1,2 @@
-import n8dNavbar from './n8d-navbar.html';
-export default n8dNavbar;
+import N8DNavbar from './n8d-navbar.html';
+export default N8DNavbar;

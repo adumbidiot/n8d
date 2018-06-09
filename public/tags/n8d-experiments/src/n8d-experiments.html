@@ -18,33 +18,31 @@
 		border-radius: 10px;
 	}
 </style>
-<div class="container text-center">
-	<div class="row">
-		<div class="col-md-12 experiment-bg">
-			<h1 class="experiment-header">Experiments</h1>
-			<div class="row justify-content-center">
-				{#await manifestPromise}
-					<p style="color: white;">Loading...</p>
-				{:then manifest}
-					{#each manifest as entry}
-						<div class="col-md-4">
-							<a href={entry.url || ""}>
-								<div class="project-bubble">
-									{#if entry.img}
-										<img alt={entry.imgAlt || ""} src={entry.img || ""} class="img-icon"/>
-									{:else}
-										<p>{entry.imgAlt}</p>
-									{/if}
-								</div>
-							</a>
-						</div>
-					{/each}
-				{:catch error}
-					<p style="color: red">Error: {error.message}</p>
-				{/await}
-			</div>
-			<br>
+<div class="row">
+	<div class="col-md-12 experiment-bg">
+		<h1 class="experiment-header">Experiments</h1>
+		<div class="row justify-content-center">
+			{#await manifestPromise}
+				<p style="color: white;">Loading...</p>
+			{:then manifest}
+				{#each manifest as entry}
+					<div class="col-md-4">
+						<a href={entry.url || ""}>
+							<div class="project-bubble">
+								{#if entry.img}
+									<img alt={entry.imgAlt || ""} src={entry.img || ""} class="img-icon"/>
+								{:else}
+									<p>{entry.imgAlt}</p>
+								{/if}
+							</div>
+						</a>
+					</div>
+				{/each}
+			{:catch error}
+				<p style="color: red">Error: {error.message}</p>
+			{/await}
 		</div>
+		<br>
 	</div>
 </div>
 <script>

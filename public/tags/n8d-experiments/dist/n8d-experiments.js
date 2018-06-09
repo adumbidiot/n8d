@@ -318,7 +318,7 @@ var N8DExperiments = (function () {
 	}
 
 	function create_main_fragment(component, ctx) {
-		var div, div_1, div_2, h1, text_1, div_3, promise, text_3, br;
+		var div, div_1, h1, text_1, div_2, promise, text_3, br;
 
 		let info = {
 			component,
@@ -337,36 +337,33 @@ var N8DExperiments = (function () {
 			c() {
 				div = createElement("div");
 				div_1 = createElement("div");
-				div_2 = createElement("div");
 				h1 = createElement("h1");
 				h1.textContent = "Experiments";
-				text_1 = createText("\r\n\t\t\t");
-				div_3 = createElement("div");
+				text_1 = createText("\r\n\t\t");
+				div_2 = createElement("div");
 
 				info.block.c();
 
-				text_3 = createText("\r\n\t\t\t");
+				text_3 = createText("\r\n\t\t");
 				br = createElement("br");
 				h1.className = "experiment-header svelte-140c3am";
-				div_3.className = "row justify-content-center";
-				div_2.className = "col-md-12 experiment-bg svelte-140c3am";
-				div_1.className = "row";
-				div.className = "container text-center";
+				div_2.className = "row justify-content-center";
+				div_1.className = "col-md-12 experiment-bg svelte-140c3am";
+				div.className = "row";
 			},
 
 			m(target, anchor) {
 				insertNode(div, target, anchor);
 				appendNode(div_1, div);
+				appendNode(h1, div_1);
+				appendNode(text_1, div_1);
 				appendNode(div_2, div_1);
-				appendNode(h1, div_2);
-				appendNode(text_1, div_2);
-				appendNode(div_3, div_2);
 
-				info.block.m(div_3, info.anchor = null);
-				info.mount = () => div_3;
+				info.block.m(div_2, info.anchor = null);
+				info.mount = () => div_2;
 
-				appendNode(text_3, div_2);
-				appendNode(br, div_2);
+				appendNode(text_3, div_1);
+				appendNode(br, div_1);
 			},
 
 			p(changed, _ctx) {
@@ -389,7 +386,7 @@ var N8DExperiments = (function () {
 		};
 	}
 
-	// (26:28)        <p style="color: white;">Loading...</p>      {:then manifest}
+	// (25:27)       <p style="color: white;">Loading...</p>     {:then manifest}
 	function create_pending_block(component, ctx) {
 		var p;
 
@@ -414,7 +411,7 @@ var N8DExperiments = (function () {
 		};
 	}
 
-	// (29:5) {#each manifest as entry}
+	// (28:4) {#each manifest as entry}
 	function create_each_block(component, ctx) {
 		var div, a, div_1, a_href_value;
 
@@ -469,7 +466,7 @@ var N8DExperiments = (function () {
 		};
 	}
 
-	// (33:9) {#if entry.img}
+	// (32:8) {#if entry.img}
 	function create_if_block(component, ctx) {
 		var img, img_alt_value, img_src_value;
 
@@ -503,7 +500,7 @@ var N8DExperiments = (function () {
 		};
 	}
 
-	// (35:9) {:else}
+	// (34:8) {:else}
 	function create_if_block_1(component, ctx) {
 		var p, text_value = ctx.entry.imgAlt, text;
 
@@ -532,7 +529,7 @@ var N8DExperiments = (function () {
 		};
 	}
 
-	// (28:4) {:then manifest}
+	// (27:3) {:then manifest}
 	function create_then_block(component, ctx) {
 		var each_anchor;
 
@@ -594,7 +591,7 @@ var N8DExperiments = (function () {
 		};
 	}
 
-	// (42:4) {:catch error}
+	// (41:3) {:catch error}
 	function create_catch_block(component, ctx) {
 		var p, text, text_1_value = ctx.error.message, text_1;
 

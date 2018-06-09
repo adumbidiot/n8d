@@ -6,7 +6,7 @@ export default {
   output: {
     file: 'dist/n8d-navbar.js',
     format: 'iife',
-	name: 'n8dNavbar'
+	name: 'N8DNavbar'
   },
   plugins: [
     svelte({

@@ -1,4 +1,4 @@
-var n8dNavbar = (function () {
+var N8DNavbar = (function () {
 	'use strict';
 
 	function noop() {}
