@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<script src="./twitchWidget.js"></script>
+		<script>
+			var widget = new twitchWidget('sodomizing_bear');
+
+			var count = 0;
+			var setup = function(){
+				count++;
+				if(count == 2){
+					document.getElementsByTagName('body')[0].appendChild(widget.element);
+				}
+			}
+
+			widget.onload = setup;
+			window.onload = setup;
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
