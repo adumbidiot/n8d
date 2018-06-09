@@ -5,21 +5,20 @@
 		background-color: black;
 		position: relative;
 	}
-	.output{
-		color: green; 
-		overflow: auto; 
-		overflow-y: scroll; 
-		position: absolute; 
-		width: 100%; 
+	.parse-info{
+		color:green; 
 		top: 3rem; 
+		position: absolute; 
+		overflow-y: scroll; 
+		width: 100%; 
 		bottom: 0rem;
 	}
 </style>
 <div>
 	<div class="main">
-		<DisplaySWFNav on:nav="onNav(event)"></DisplaySWFNav>
-		{#if displayStartInfo}
-			<div style="color:green; top: 3rem; position: absolute; overflow-y: scroll; width: 100%; bottom: 0rem;">
+		<DisplaySWFNav on:nav="onNav(event)" navURL={navURL}/>
+		{#if tags.length > 0}
+			<div class="parse-info">
 				<div>
 					<b>[ STATS ]</b>
 				</div>
@@ -31,50 +30,82 @@
 				<div>End Epoch Time: {endTime.getTime()}ms</div>
 				<div>Parse Time: {parseTime}ms</div>
 				<div>Tags Per Millisecond: {tps} tags/ms</div>
-				<div>Tags Parsed: {tagsParsed} tags</div>
-				<div><b>[ /STATS ]</b></div>
+				<div>Tags Parsed: {tags.length} tags</div>
+				<div>
+					<b>[ /STATS ]</b>
+				</div>
 				<br>
-				<div><b>[ BODY ]</b></div>
-				{#each swfTags as tag}
-					<details>
-						<summary>
-							{name} (code={recordHeader.code})
-						</summary>
-						<p>WIP</p>
-					</details>
+				<div>
+					<b>[ BODY ]</b>
+				</div>
+				{#each tags as tag}
+					<DisplaySWFTag tag={tag}/>
 				{/each}
-				<div><b>[ /BODY ]</b></div>
-				<div ref="output"></div>
+				<div>
+					<b>[ /BODY ]</b>
+				</div>
 			</div>
 		{/if}
 	</div>
 </div>
 <script>
 	import DisplaySWFNav from './display-swf-nav.html';
-	function getNewParser(SWFTools){
-		return new SWFTools.SWFParser();
-	}
-	
+	import DisplaySWFTag from './display-swf-tag.html';
+
 	export default {
 		components: {
-			DisplaySWFNav
+			DisplaySWFNav,
+			DisplaySWFTag
 		},
 		methods: {
-			onNav(e){
-				const url = e.url;
+			onNav({url}){
 				const {parser} = this.get();
-				console.log(parser);
 				SWFTools.fetchAndParse(parser, url);
+			},
+			attachParserHandlers(){
+				const {parser, tags} = this.get();
+				const component = this;
+				
+				parser.on('start', function(){
+					component.set({startTime: new Date()});
+					tags.length = 0;
+				});
+				
+				parser.on('tag', function(tag){
+					tags.push(tag);
+				});
+				
+				parser.on('end', function(){
+					const {startTime} = component.get();
+					const endTime = new Date();
+					const parseTime = endTime.getTime() - startTime.getTime();
+					
+					setTimeout(function(){
+						const tpsRaw = (tags.length / parseTime).toFixed(2);
+						const tps = isFinite(tpsRaw) ? tpsRaw : tags.length;
+						
+						component.set({tags, endTime, parseTime, tps});
+					}, 0);
+				});
 			}
-			
 		},
 		data(){
 			return {
-				SWFTools: SWFTools
+				SWFTools: SWFTools,
+				parser: new SWFTools.SWFParser(),
+				tags: [],
+				navURL: 'games/pong.swf'
 			}
 		},
-		computed: {
-			parser: ({SWFTools}) => getNewParser(SWFTools)
+		onstate({changed, current}){
+			if (changed.parser) {
+				this.attachParserHandlers();
+			}
+		},
+		oncreate(){
+			if(this.options.autorun){
+				this.onNav({url: this.get().navURL});
+			}
 		}
 	};
 </script>

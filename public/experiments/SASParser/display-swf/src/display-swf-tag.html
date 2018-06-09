@@ -1,0 +1,17 @@
+<details>
+	<summary>
+		{tag.name} (code={tag.recordHeader.code})
+	</summary>
+	{#each Object.keys(tag) as key}
+		<div>{key} : {tag[key]}</div>
+	{/each}
+	<p>WIP</p>
+</details>
+<script>
+	import './display-swf-tag-lib.js';
+	export default {
+		methods: {
+			
+		}
+	}
+</script>
