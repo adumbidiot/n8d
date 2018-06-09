@@ -1,4 +1,7 @@
-<svelte:window ref:navbar></svelte:window>
+<svelte:head>
+	<link href="/css/bootstrap.min.css" rel="stylesheet"/>
+</svelte:head>
+
 <nav class="navbar navbar-dark navbar-expand-md bg-dark" style="color: black">
 	<a class="navbar-brand" href="/">NateD</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,10 +48,29 @@
 	</script>-->
 </nav>
 <script>
+	function importScript(src){
+		let el = document.createElement('script');
+		el.src = src;
+		document.head.appendChild(el);
+	}
 	export default {
+		tag: 'n8d-navbar',
 		onstate({changed, current, previous}){
 			if(!previous){
-				console.log(this);
+				let deps = [
+					{symbol: '$', src: '/scripts/jquery-3.2.1.min.js'},
+					{symbol: 'bootstrap', src: '/scripts/bootstrap.min.js'}
+				];
+				for(let i = 0; i != deps.length; i++){
+				console.log(typeof window[deps[i].symbol]);
+					if(!window[deps[i].symbol]){
+						if (deps[i].symbol === 'bootstrap'){
+							setTimeout(importScript.bind(this, deps[i].src), 3000);
+							continue;
+						}
+						importScript(deps[i].src);
+					}
+				}
 			}
 		}
 	}

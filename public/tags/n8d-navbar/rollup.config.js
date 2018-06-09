@@ -9,6 +9,8 @@ export default {
 	name: 'n8dNavbar'
   },
   plugins: [
-    svelte()
+    svelte({
+	
+	})
   ]
 }
