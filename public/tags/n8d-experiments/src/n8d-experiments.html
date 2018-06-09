@@ -1,0 +1,58 @@
+<style>
+	.experiment-header{
+		font-weight: 200; 
+		padding-bottom: 10px; 
+		color: white;
+	}
+	.img-icon{
+		height: 50px;
+	}
+	.project-bubble{
+		background-color: grey; 
+		border: 1px solid grey; 
+		border-radius: 40px;
+		margin: 2px;
+	}
+	.experiment-bg{
+		background-color: #030303; 
+		border-radius: 10px;
+	}
+</style>
+<div class="container text-center">
+	<div class="row">
+		<div class="col-md-12 experiment-bg">
+			<h1 class="experiment-header">Experiments</h1>
+			<div class="row justify-content-center">
+				{#await manifestPromise}
+					<p style="color: white;">Loading...</p>
+				{:then manifest}
+					{#each manifest as entry}
+						<div class="col-md-4">
+							<a href={entry.url || ""}>
+								<div class="project-bubble">
+									{#if entry.img}
+										<img alt={entry.imgAlt || ""} src={entry.img || ""} class="img-icon"/>
+									{:else}
+										<p>{entry.imgAlt}</p>
+									{/if}
+								</div>
+							</a>
+						</div>
+					{/each}
+				{:catch error}
+					<p style="color: red">Error: {error.message}</p>
+				{/await}
+			</div>
+			<br>
+		</div>
+	</div>
+</div>
+<script>
+	export default {
+		computed: {
+			manifestPromise: ({src}) => {
+				return fetch(src).then(res => res.json());
+			}
+		}
+	}
+</script>

@@ -5,80 +5,16 @@
 		<link rel="stylesheet" href="/css/bootstrap.min.css">
 		<script src="/scripts/popper.min.js"></script>
 		<script src="/scripts/bootstrap.min.js"></script>
-		<script src="/scripts/riot+compiler.min.js"></script>
-		<script src="/tags/navbar.tag" type="riot/tag"></script>
+		<script src="/tags/n8d-experiments/dist/n8d-experiments.js"></script>
+		<script src="/tags/n8d-navbar/dist/n8d-navbar.js"></script>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<style>
-			.experiment-header{
-				font-weight: 200; 
-				padding-bottom: 10px; 
-				color: white;
-			}
-			.img-icon{
-				height: 50px;
-			}
-			.project-bubble{
-				background-color: grey; 
-				border: 1px solid grey; 
-				border-radius: 40px;
-			}
-			.experiment-bg{
-				background-color: #030303; 
-				border-radius: 10px;
-			}
-		</style>
 	</head>
 	<body>
-		<navbar></navbar>
+		<div id="n8d-navbar"></div>
 		<br>
 		<div class="container text-center">
-			<div class="row">
-				<div class="col-md-12 experiment-bg">
-					<h1 class="experiment-header">Experiments</h1>
-					<div class="row justify-content-center">
-						<div class="col-md-4">
-							<a href="./riotjs">
-								<div class="project-bubble">
-									<img alt="RIOT.JS" src="/images/riotjs.png" class="img-icon"/>
-								</div>
-							</a>
-						</div>
-						<div class="col-md-4">
-							<a href="./code-finder">
-								<div class="project-bubble">
-									<img alt="Quizizz Code Finder" src="/images/quizizz.png" class="img-icon"/>
-								</div>
-							</a>
-						</div>
-						<div class="col-md-4">
-							<a href="./SASParser">
-								<div class="project-bubble">
-									<img alt="SWFTools" src="/images/swf.png" class="img-icon"/>
-								</div>
-							</a>
-						</div>
-					</div>
-					<br>
-					<div class="row justify-content-center">
-						<div class="col-md-4">
-							<a href="./chip8">
-								<div class="project-bubble">
-									<img alt="CHIP8 Emulator" src="/images/chip8.png" class="img-icon"/>
-								</div>
-							</a>
-						</div>
-						<div class="col-md-4">
-							<a href="./visual-fibonacci">
-								<div class="project-bubble">
-									<img alt="Visual Fibonacci" src="/images/visual-fibonacci.png" class="img-icon"/>
-								</div>
-							</a>
-						</div>
-					</div>
-					<br>
-				</div>
-			</div>
+			<div id="n8d-experiments"></div>
 			<div>
 				<a href="APPhysics2">APPhysics2</a>
 			</div>
@@ -92,7 +28,15 @@
 			<a href="./graveyard">Graveyard</a>
 		</div>
 		<script>
-			riot.mount('navbar');
+			let experimentsTag = new N8DExperiments({
+				target: document.getElementById('n8d-experiments'),
+				data: {
+					src: "list.json"
+				}
+			});
+			let navbarTag = new N8DNavbar({
+				target: document.getElementById('n8d-navbar')
+			});
 		</script>
 	</body>
 </html>

@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<title>N8D Experiments Tag</title>
+		<script src="dist/n8d-experiments.js"></script>
+		<script src="/scripts/jquery-3.2.1.min.js"></script>
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<script src="/scripts/popper.min.js"></script>
+		<script src="/scripts/bootstrap.min.js"></script>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	</head>
+	<body>
+		<div id="tag"></div>
+		<script>
+			let tag = document.getElementById('tag');
+			let svelteTag = new N8DExperiments({
+				target: tag,
+				data: {
+					src: 'list.json'
+				}
+			});
+		</script>
+	</body>
+</html>

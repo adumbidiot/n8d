@@ -1,0 +1,21 @@
+{
+  "name": "n8d-experiments",
+  "version": "1.0.0",
+  "description": "display for experiments",
+  "main": "rollup.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "display",
+    "experiments",
+    "n8d"
+  ],
+  "author": "nano",
+  "license": "ISC",
+  "dependencies": {
+    "rollup": "^0.60.1",
+    "rollup-plugin-svelte": "^4.1.0",
+    "svelte": "^2.7.2"
+  }
+}
