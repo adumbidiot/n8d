@@ -18,5 +18,13 @@
 		"url": "visual-fibonacci",
 		"imgAlt": "Visual Fibonacci",
 		"img[BROKEN]": "/images/visual-fibonacci.png"
+	},
+	{
+		"url": "boyce-ball",
+		"imgAlt": "Boyce Ball"
+	},
+	{
+		"url": "APPhysics2",
+		"imgAlt": "AP Physics 2 Projects"
 	}
 ]
