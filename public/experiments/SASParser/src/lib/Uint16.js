@@ -5,9 +5,6 @@ export class Uint16 extends Parsable{
 	static get size(){
 		return 2;
 	}
-	static get name(){
-		return 'uint16';
-	}
 	constructor(){
 		super();
 		this.value = 0;

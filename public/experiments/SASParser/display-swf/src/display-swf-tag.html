@@ -2,16 +2,20 @@
 	<summary>
 		{tag.name} (code={tag.recordHeader.code})
 	</summary>
-	{#each Object.keys(tag) as key}
-		<div>{key} : {tag[key]}</div>
-	{/each}
-	<p>WIP</p>
+	{#if getReadable(tag) != -1}
+		{@html getReadable(tag)}
+	{:else}
+		{#each Object.keys(tag) as key}
+			<div>{key} : {tag[key]}</div>
+		{/each}
+	{/if}
 </details>
 <script>
-	import './display-swf-tag-lib.js';
+	import {getReadable} from './display-swf-tag-lib.js';
+	
 	export default {
-		methods: {
-			
+		helpers: {
+			getReadable
 		}
 	}
 </script>

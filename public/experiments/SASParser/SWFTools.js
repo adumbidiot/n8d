@@ -128,9 +128,6 @@
 		static get size(){
 			return 2;
 		}
-		static get name(){
-			return 'uint16';
-		}
 		constructor(){
 			super();
 			this.value = 0;
@@ -290,6 +287,144 @@
 
 	define(RGB.name, RGB);
 
+	class ABCFile extends Parsable{
+		static get size(){
+			return -1;
+		}
+		
+		constructor(){
+			super();
+		}
+		
+		parse(buffer, offset){
+			this.size = 0;
+			this.minorVersion = get('uint16').parse(buffer, offset); 
+			this.size += 2;
+			this.majorVersion = get('uint16').parse(buffer, offset + this.size);
+			this.size += 2;
+			this.constantPool = get('CPoolInfo').parse(buffer, offset + this.size);
+			console.log(this.constantPool);
+			return this;
+		}
+	}
+
+	define(ABCFile.name, ABCFile);
+
+	class CPoolInfo extends Parsable{
+		static get size(){
+			return -1;
+		}
+		constructor(){
+			super();
+		}
+		parse(buffer, offset){
+			this.size = 0;
+			this.int_count = get('uint30variable').parse(buffer, offset);
+			this.size += this.int_count.size;
+
+			this.integer = [];
+			for(let i = 0; i < this.int_count.value - 1; i++){
+				this.integer.push(get('Int32Variable').parse(buffer, offset + this.size));
+				this.size += this.integer[this.integer.length - 1].size;
+			}
+			
+			this.uinteger = [];
+			this.uint_count = get('uint30variable').parse(buffer, offset + this.size);
+			this.size += this.uint_count.size;
+			for(let i = 0; i < this.uint_count.value - 1; i++){
+				this.uinteger.push(get('Int32Variable').parse(buffer, offset + this.size));
+				this.size += this.uinteger[this.uinteger.length - 1].size;
+			}
+			
+			
+			this.double_count = get('uint30variable').parse(buffer, offset + this.size);
+			this.size += this.double_count.size;
+			
+			this.double = [];
+			for(let i = 0; i < this.double_count.value - 1; i++){
+				this.double.push(get('Double').parse(buffer, offset + this.size));
+				this.size += this.double[this.double.length - 1].size;
+			}
+			
+			return this;
+		}
+	}
+
+	define(CPoolInfo.name, CPoolInfo);
+
+	class Uint30Variable extends Parsable{
+		static get size(){
+			return -1;
+		}
+		constructor(){
+			super();
+			this.value = 0;
+		}
+		parse(buffer, offset){
+			this.size = 0;
+			do{
+				this.value += (buffer[offset + this.size] << this.size);
+				this.size++;
+			}while(buffer[offset + this.size - 1] >= 128);
+			
+			return this;
+		}
+	}
+
+	define(Uint30Variable.name, Uint30Variable);
+
+	class Int32Variable extends Parsable{
+		static get size(){
+			return -1;
+		}
+		constructor(){
+			super();
+			this.value = 0;
+		}
+		parse(buffer, offset){
+			this.size = 0;
+			do{
+				this.value += ((buffer[offset + this.size] & 0b01111111) << (this.size * 7));
+				this.size++;
+			}while(buffer[offset + this.size - 1] >= 128);
+			
+			/*if(this.size >= 2){ 
+				console.log(buffer[offset], buffer[offset+1], buffer[offset+1] << 6, this.value);
+			}*/
+			
+			return this;
+		}
+	}
+
+	define(Int32Variable.name, Int32Variable);
+
+	class Double extends Parsable{
+		static get size(){
+			return 8;
+		}
+		constructor(){
+			super();
+			this.value = 0;
+		}
+		parse(buffer, offset){
+			this.fraction = 0;
+			for(let i = 0; i != 6; i++){
+				console.log(this.fraction);
+				this.fraction += buffer[i + offset] << (i * 8);
+			}
+			
+			
+			this.sign = buffer[offset + 8] & 0b10000000;
+			this.exponent = (buffer[offset + 7] & 0b01111111) | (buffer[offset + 6] & 0b11110000) << 3;
+			console.log(buffer[offset+ 7], buffer[offset + 6], this.exponent);
+			
+			
+			return this;
+		}
+	}
+
+	define(Double.name, Double);
+
 	class Tag extends Parsable{
 		static get code(){
 			throw "Static method code must be implemented";
@@ -326,7 +461,10 @@
 			this.size = this.recordHeader.length + this.recordHeader.size;
 			this.flags = get('uint32').parse(buffer, offset + this.recordHeader.size);
 			this.scriptName = get('nulstring').parse(buffer, offset + this.recordHeader.size + this.flags.size);
-			offset += this.recordHeader.size + this.flags.size + this.scriptName.size;
+			offset += this.recordHeader.size + this.flags.size + this.scriptName.size + 1; //Off by one somewhere...
+			
+			this.abcFile = get('ABCFile').parse(buffer, offset);
+			
 			this.data = buffer.slice(offset, start + this.recordHeader.length);
 			return this;
 		}

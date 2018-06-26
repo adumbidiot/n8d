@@ -15,7 +15,7 @@ export class NulString extends Parsable{
 			this.value += String.fromCharCode(buffer[i]);
 			i++;
 		}
-		this.size = i - offset;
+		this.size = (i - offset) + 1;
 		return this;
 	}
 }

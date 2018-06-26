@@ -1,0 +1,30 @@
+[
+	{
+		"label": "AVM Overview",
+		"url": "resources/avm2overview.pdf"
+	},
+	{
+		"label": "SWF 19 Specification",
+		"url": "resources/swf-file-format-spec.pdf"
+	},
+	{
+		"label": "Rollup Build System",
+		"url": "https://rollupjs.org/guide/en"
+	},
+	{
+		"label": "MDN Details Tag Info",
+		"url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"
+	},
+	{
+		"label": "Old RIOT UI",
+		"url": "http://riotjs.com/"
+	},
+	{
+		"label": "Current Svelte UI",
+		"url": "https://svelte.technology"
+	},
+	{
+		"label": "FFDec",
+		"url": "https://www.free-decompiler.com/flash/links/"
+	}
+]
