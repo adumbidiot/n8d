@@ -1,0 +1,12 @@
+{
+  "name": "TTT",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "nano",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "rollup-plugin-svelte": "^4.2.1",
+    "svelte": "^2.9.7"
+  }
+}

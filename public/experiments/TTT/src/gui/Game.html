@@ -1,0 +1,93 @@
+<div style="background-color: grey; width: 300px;">
+	<canvas ref:canvas width="300" height="300" on:click="handleBoardClick(event)"></canvas>
+	<div class="boardState" ref:boardHash style="color: white;">Hash: {hash}</div>
+</div>
+
+<script>
+	import {hashState, genState, fullBoard} from '../Utils.js';
+	
+	
+	export default {
+		tag: 'tttgui-game',
+		data() {
+			return {
+				boardState: new Array(9),
+				userTurn: 'X'
+			}
+		},
+		methods: {
+			handleBoardClick(e){
+				let rect = this.refs.canvas.getBoundingClientRect();
+				let x = e.clientX - rect.left;
+				let y = e.clientY - rect.top;
+				
+				x = (x / 100) | 0;
+				y = (y / 100) | 0;
+				let i = y * 3 + x;
+				
+				
+				let {boardState, userTurn} = this.get();
+				
+				if(boardState[i] != 'N'){
+					return;
+				}
+				
+				boardState[i] = userTurn;
+				
+				userTurn = (userTurn == 'X') ? 'O' : 'X';
+				this.set({boardState, userTurn});
+			},
+			drawBoard(board){
+				let ctx = this.refs.canvas.getContext('2d');
+				ctx.clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
+				ctx.beginPath();
+				for(let i = 0; i != 9; i++)
+					ctx.rect((i % 3) * 100, ((i / 3) | 0) * 100, 100, 100);
+					
+				ctx.stroke();
+				
+				for(let i = 0; i != board.length; i++){
+					switch(board[i]){
+						case 'X': {
+							ctx.font = "30px Arial";
+							ctx.textAlign = "center";
+							ctx.fillText('X', ((i % 3) * 100) + 50, (((i / 3) | 0) * 100) + 50);
+							break;
+						}
+						case 'O': {
+							ctx.font = "30px Arial";
+							ctx.textAlign = "center";
+							ctx.fillText('O', ((i % 3) * 100) + 50, (((i / 3) | 0) * 100) + 50);
+						}
+					}
+				}
+			},
+			getHash(){
+				return this.get().hash;
+			},
+			AIMove(hash){
+				let boardState = genState(hash);
+				console.log(boardState);
+				this.set({boardState, userTurn: 'O'});
+			},
+			setHash(hash){
+				
+			}
+		},
+		computed: {
+			hash: ({boardState}) => {
+				return hashState(boardState);
+			}
+		},
+		oncreate(){
+			let {boardState} = this.get();
+			boardState.fill('N');
+			this.set({boardState});
+		},
+		onupdate({changed, current, previous}){
+			if(changed.boardState){
+				this.drawBoard(current.boardState);
+			}
+		}
+	}
+</script>

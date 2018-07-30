@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<title>TTT</title>
+		<script src="download.js"></script>
+		<script src="msgpack.min.js"></script>
+		<script src="dist/TTTGUI.js"></script>
+		<script src="dist/TTT.js"></script>
+	</head>
+	<body>
+		<ttt-ai options="ai" winner="O"></ttt-ai>
+		<tttgui-game id = "game"></tttgui-game>
+		<div>
+			<div id="nodeProcessed" style="position:absolute; width:200px; top:5px; right:5px;">0 nodes processed</div>
+		</div>
+		<div id="display"></div>
+		<input type="text" id = "input" onkeydown="handleEnter(event)">
+		<button id="renderButton" onclick = "displayID(event)">Display ID</button>
+		<button onclick="g.recompileTree()">Recompile Tree</button>
+		<button onclick="AIMove()">AI Move</button>
+		<script>
+			let nodeProcessed = document.getElementById('nodeProcessed');
+			let game = document.getElementById('game');
+			
+			let display = document.getElementById('display');
+			function render(arr, extra){
+				display.innerHTML = '';
+				for(let i = 0; i != 3; i++){
+					let data = '<div>';
+					for(let j = 0; j != 3; j++){
+						data += arr[(i * 3) + j];
+					}
+					display.innerHTML += data + '</div>';
+				}
+				
+				if(extra){
+					display.innerHTML += extra;
+				}
+			}
+		</script>
+		<script>
+			let g = new TTT.TTT();
+			g.loadTreeFromURL('table.TTT');
+			g.compiler.onProcessedNode = function(num){
+				nodeProcessed.innerHTML = num + " nodes processed";
+			}
+			console.log(g);
+			
+			let test1 = ['X', 'X', 'X', 
+					'N', 'N', 'N',
+					'N', 'X', 'N' ];
+			//console.log(g.hash(test1));
+			//render(test1);
+					
+			let arrTest = g.genState(100);
+			render(arrTest, 'State: ' + g.hash(arrTest));
+			
+			//console.log(g.getPossibleStates(test1, 'X'));
+			
+			let input = document.getElementById('input');
+			let renderButton = document.getElementById('renderButton');
+			
+			function displayID(){
+				render(g.genState(input.value));
+			}
+			
+			function handleEnter(e){
+				//console.log(e);
+				if(e.code == "Enter"){
+					displayID();
+				}
+			}
+			
+			function AIMove(){
+				let move = g.getMove('X', game.getHash());
+				console.log(move);
+				game.AIMove(move.id);
+			}
+			//alert('Data: ' + g.getWinner(g.genState(13)));
+			console.log(g.getWinner(g.genState(229)));
+		</script>
+	</body>
+</html>

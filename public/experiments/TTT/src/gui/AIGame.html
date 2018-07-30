@@ -1,0 +1,169 @@
+<div style="background-color: grey; width: 300px; user-select:none;">
+	<canvas ref:canvas width="300" height="300" on:click="handleBoardClick(event)"></canvas>
+	<div class="boardState" ref:boardHash style="color: white;">Hash: {hash}</div>
+	<div style="color: white;">Winner: {winnerText}</div>
+	<button on:click="restart()">Restart</button>
+	<button on:click="changePiece()">Change Piece</button>
+</div>
+
+<script>
+	import {hashState, genState, getWinner, fullBoard, getWinnerDetails, invertPiece} from '../Utils.js';
+	import AI from '../AI.js';
+	
+	let ai = new AI();
+	
+	export default {
+		tag: 'ttt-ai',
+		data() {
+			return {
+				boardState: new Array(9),
+				userTurn: 'X',
+				winner: 'N',
+				start: 'player',
+				AIPiece: 'O' //X
+			}
+		},
+		methods: {
+			handleBoardClick(e){
+				let {winner, boardState, userTurn} = this.get();
+				if(winner != 'N' || fullBoard(boardState)){
+					return;
+				}
+				
+				let rect = this.refs.canvas.getBoundingClientRect();
+				let x = e.clientX - rect.left;
+				let y = e.clientY - rect.top;
+				
+				x = (x / 100) | 0;
+				y = (y / 100) | 0;
+				let i = y * 3 + x;
+				
+				
+				if(boardState[i] != 'N'){
+					return;
+				}
+				
+				boardState[i] = userTurn;
+				
+				userTurn = invertPiece(userTurn);
+				this.set({boardState, userTurn});
+				this.AITurn();
+			},
+			drawBoard(board){
+				let {boardState} = this.get();
+				let winnerDetails = getWinnerDetails(boardState);
+				if(winnerDetails.winner != 'N'){
+					this.set({winner: winnerDetails.winner});
+				}else if(fullBoard(boardState)){
+					this.set({winner: 'T'});
+				}
+				
+				let ctx = this.refs.canvas.getContext('2d');
+				ctx.clearRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
+				ctx.beginPath();
+				
+				for(let i = 0; i != 9; i++){
+					let x = (i % 3) * 100;
+					let y = ((i / 3) | 0) * 100;
+					ctx.rect(x, y, 100, 100);
+				}
+				
+				ctx.stroke();
+				
+				
+				if(winnerDetails.winner != 'N'){
+					ctx.save();
+					ctx.fillStyle= "red";
+					for(let i = 0; i != winnerDetails.tiles.length; i++){
+						let x = (winnerDetails.tiles[i] % 3) * 100;
+						let y = ((winnerDetails.tiles[i] / 3) | 0) * 100;
+						ctx.fillRect(x, y, 100, 100);
+					}
+					ctx.restore();
+				}
+				
+				
+				
+				ctx.font = "30px Arial";
+				ctx.textAlign = "center";
+				for(let i = 0; i != board.length; i++){
+					let x = ((i % 3) * 100) + 50;
+					
+					switch(board[i]){
+						case 'X': {
+							ctx.fillText('X', x, (((i / 3) | 0) * 100) + 50);
+							break;
+						}
+						case 'O': {
+							ctx.fillText('O', x, (((i / 3) | 0) * 100) + 50);
+							break;
+						}
+					}
+				}
+			},
+			getHash(){
+				return this.get().hash;
+			},
+			AITurn(){
+				let {winner, boardState} = this.get();
+				if(winner != 'N' || fullBoard(boardState)){
+					return;
+				}
+				
+				let move = ai.getMove(this.getAIPiece(), this.getHash());
+				console.log(move);
+				boardState = genState(move.id);
+				this.set({boardState, userTurn: invertPiece(this.getAIPiece())});
+			},
+			playerTurn(){
+				
+			},
+			restart(){
+				this.init();
+				if(this.getAIPiece() == 'X')
+					this.AITurn();
+			},
+			init(){
+				let {boardState} = this.get();
+				boardState.fill('N');
+				this.set({boardState, winner: 'N', userTurn: 'X'});
+			},
+			getAIPiece(){
+				return this.get().AIPiece;
+			},
+			changePiece(){
+				this.set({AIPiece: invertPiece(this.getAIPiece())});
+				this.restart();
+			}
+		},
+		computed: {
+			hash: ({boardState}) => {
+				return hashState(boardState);
+			},
+			winnerText: ({winner, AIPiece}) => {
+				if(winner == 'N'){
+					return 'Nobody';
+				}else if(winner == 'T'){
+					return 'Tie';
+				}else if(winner == AIPiece){
+					return 'AI'
+				}else if(winner == invertPiece(AIPiece)){
+					return 'Player';
+				}
+			}
+		},
+		oncreate(data){
+			this.init();
+			ai.loadFromURL('table.TTT').then(() => {
+				ai.table[81].score = 0;
+				if(this.getAIPiece() == 'X')
+					this.AITurn();
+			});
+		},
+		onupdate({changed, current, previous}){
+			if(changed.boardState){
+				this.drawBoard(current.boardState);
+			}
+		}
+	}
+</script>
