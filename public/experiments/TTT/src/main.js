@@ -4,12 +4,6 @@ import {hashState, key, genState, getWinner} from './Utils.js';
 export class TTT {
 	constructor() {
 		this.compiler = new Compiler();
-		try{
-			let data = new Uint8Array(JSON.parse(localStorage.getItem('table')).data);
-			this.table = msgpack.decode(data);
-		}catch(e){
-			console.error(e);
-		}
 	}
 	
 	async loadTreeFromURL(url){

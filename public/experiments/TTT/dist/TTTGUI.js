@@ -455,7 +455,7 @@ var TTTGUI = (function (exports) {
 	function oncreate(data){
 		this.init();
 		ai.loadFromURL('table.TTT').then(() => {
-			ai.table[81].score = 0;
+		//	ai.table[81].score = 0;
 			if(this.getAIPiece() == 'X')
 				this.AITurn();
 		});
