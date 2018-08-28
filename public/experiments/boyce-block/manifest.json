@@ -5,7 +5,18 @@
 	"background": {
       "scripts": ["background.js"]
     },
-	"permissions": ["storage"],
+	"permissions": [
+		"storage"
+	],
+	"content_scripts": [
+		{
+			"matches": [
+				"http://*/*",
+				"https://*/*"
+			],
+			"js": ["main.js"]
+		}
+	],
 	"page_action": {
 		"default_popup": "popup.html",
 		"default_icon": {
