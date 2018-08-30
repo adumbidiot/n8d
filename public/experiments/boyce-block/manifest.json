@@ -17,6 +17,9 @@
 			"js": ["main.js"]
 		}
 	],
+	"web_accessible_resources": [
+		"images/jacob128.png"
+	],
 	"page_action": {
 		"default_popup": "popup.html",
 		"default_icon": {
