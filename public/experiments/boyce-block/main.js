@@ -1,4 +1,11 @@
-console.log("hi");
+const BlockAdBlock = "BOYCE BLOCKED";
+
+Object.defineProperty(window, "BlockAdBlock", {
+  value:  Object.freeze("BOYCE"),
+  writable: false,
+  enumerable: true,
+  configurable: true
+});
 
 let hostTriggers = [
 	"ads.pictela.net",
