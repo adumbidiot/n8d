@@ -1,0 +1,20 @@
+[package]
+name = "tttjs"
+version = "0.1.0"
+authors = ["adumbidiot <nathaniel.daniel23@outlook.com>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+ttt = {path = "../ttt"}
+serde_json = "1.0"
+
+[dependencies.wasm-bindgen]
+version = "^0.2"
+features = ["serde-serialize"]
+
+[profile.release]
+lto = true
+opt-level = 3
+codegen-units = 1
