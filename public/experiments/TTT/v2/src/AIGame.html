@@ -9,8 +9,6 @@
 <script>
 	import {hashState, genState, getWinner, fullBoard, getWinnerDetails, invertPiece} from './Utils.js';
 	
-	//let ai = new AI();
-	let ai = window.ai;
 	export default {
 		tag: 'ttt-ai',
 		data() {
@@ -111,7 +109,9 @@
 				}
 				
 				let move = ai.get_move(this.getHash(), this.getAIPiece());
-				console.log(move);
+				
+				console.log("Node:", move);
+				
 				boardState = genState(move);
 				this.set({boardState, userTurn: invertPiece(this.getAIPiece())});
 			},
@@ -154,16 +154,37 @@
 		},
 		oncreate(data){
 			this.init();
-			let ai = new TTT.AI();
-			this.set({ai});
-			let c = new TTT.Compiler(); 
-			c.run();
-			ai.load(c.export_js());
-			//ai.loadFromURL('table.TTT').then(() => {
-			//	ai.table[81].score = 0;
-			if(this.getAIPiece() == 'X')
-				this.AITurn();
-			//});
+			TTT.getPromise().then(() => {
+				let c = new TTT.Compiler(); 
+				
+				let t0 = performance.now();
+				c.run();
+				let t1 = performance.now();
+				
+				
+				let report = `Compile Report: 
+				Compile Time: ${(t1 - t0)} ms
+				Nodes Processed: ${c.get_nodes_processed()} nodes
+				Winners Processed: ${c.get_winners_processed()} nodes
+				Nodes Scored: ${c.get_nodes_scored()} nodes
+				`;
+				
+				let t2 = performance.now();
+				let table = c.export_js();
+				let t3 = performance.now();
+				
+				report += `Export Time: ${t3 - t2} ms`;
+				
+				console.log(report);
+				
+				//console.log(msgpack.encode(table));
+				
+				let ai = new TTT.AI();
+				ai.load(table);
+				this.set({ai});
+				if(this.getAIPiece() == 'X')
+					this.AITurn();
+			});
 		},
 		onupdate({changed, current, previous}){
 			if(changed.boardState){

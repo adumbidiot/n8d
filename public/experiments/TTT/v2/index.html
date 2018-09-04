@@ -2,40 +2,16 @@
 	<head>
 		<title>TTT V2</title>
 		<script src="./msgpack.min.js"></script>
-		<script>
-			//let self = {};
-		</script>
+		<script src="dist/TTT.js"></script>
 		<script src="dist/TTTGUI.js"></script>
-		<script src="./tttjs/dist/tttjs.js"></script>
+		<script>
+			console.log('TTT', TTT);
+		</script>
 	</head>
 	<body>
 		<script>
-			TTT("./tttjs/dist/tttjs_bg.wasm").then(() => {
-				let c = new TTT.Compiler();
-				let t0 = performance.now();
-				c.run();
-				let t1 = performance.now();
-				
-	
-				console.log("Compile Time: " +  (t1 - t0) + "ms");
-				console.log("Nodes Processed: " + c.get_nodes_processed());
-				console.log("Winners Processed: " + c.get_winners_processed());
-				console.log("Nodes Scored: " + c.get_nodes_scored());
-				let table = c.export_js();
-				console.log(msgpack.encode(table));
-				console.log(table);
-				
-				let ai = new TTT.AI();
-				ai.load(table);
-				console.log(ai.get_move(1, 'O'));
-				
-				console.log(ai);
-				window.ai = ai;
-				//window.ai = new AI(data);
-				//window.ai.getMove("NNNNNNNNX");
-				document.body.innerHTML += "<ttt-ai></ttt-ai>";
-			});
+			TTT.init("./tttjs/dist/tttjs_bg.wasm");
 		</script>
-		
+		<ttt-ai></ttt-ai>
 	</body>
 </html>

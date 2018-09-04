@@ -2,6 +2,14 @@ import svelte from 'rollup-plugin-svelte';
 
 export default[
 	{
+		input: 'src/main.js',
+		output: {
+			name: 'TTT',
+			file: 'dist/TTT.js',
+			format: 'iife'
+		}
+	},
+	{
 		input: 'src/gui.js',
 		output: {
 			name: 'TTTGUI',
