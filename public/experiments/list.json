@@ -1,30 +1,30 @@
 [
 	{
-		"url" : "code-finder",
+		"url" : "code-finder/",
 		"imgAlt": "Quizizz Code Finder",
 		"img": "/images/quizizz.png"
 	},
 	{
-		"url": "SASParser",
+		"url": "SASParser/",
 		"imgAlt" : "SWFTools",
 		"img": "/images/swf.png"
 	},
 	{
-		"url": "chip8",
+		"url": "chip8/",
 		"imgAlt": "CHIP8 Emulator",
 		"img": "/images/chip8.png"
 	},
 	{
-		"url": "visual-fibonacci",
+		"url": "visual-fibonacci/",
 		"imgAlt": "Visual Fibonacci",
 		"img[BROKEN]": "/images/visual-fibonacci.png"
 	},
 	{
-		"url": "boyce-ball",
+		"url": "boyce-ball/",
 		"imgAlt": "Boyce Ball"
 	},
 	{
-		"url": "APPhysics2",
+		"url": "APPhysics2/",
 		"imgAlt": "AP Physics 2 Projects"
 	}
 ]
