@@ -1,66 +1,13 @@
 <html>
 	<head>
-		<title>TTT</title>
-		<script src="download.js"></script>
-		<script src="msgpack.min.js"></script>
-		<script src="dist/TTTGUI.js"></script>
-		<script src="dist/TTT.js"></script>
+		<title>Tic Tac Toe</title>
 	</head>
 	<body>
-		<ttt-ai options="ai" winner="O"></ttt-ai>
 		<div>
-			<div id="nodeProcessed" style="position:absolute; width:200px; top:5px; right:5px;">0 nodes processed</div>
+			<a href="v2/">Version 2 (What you came here for)</a>
 		</div>
-		<div id="display"></div>
-		<input type="text" id = "input" onkeydown="handleEnter(event)">
-		<button id="renderButton" onclick = "displayID(event)">Display ID</button>
-		<button onclick="g.recompileTree()">Recompile Tree</button>
-		<script>
-			let nodeProcessed = document.getElementById('nodeProcessed');
-			let game = document.getElementById('game');
-			
-			let display = document.getElementById('display');
-			function render(arr, extra){
-				display.innerHTML = '';
-				for(let i = 0; i != 3; i++){
-					let data = '<div>';
-					for(let j = 0; j != 3; j++){
-						data += arr[(i * 3) + j];
-					}
-					display.innerHTML += data + '</div>';
-				}
-				
-				if(extra){
-					display.innerHTML += extra;
-				}
-			}
-		</script>
-		<script>
-			let g = new TTT.TTT();
-			g.loadTreeFromURL('table.TTT');
-			g.compiler.onProcessedNode = function(num){
-				nodeProcessed.innerHTML = num + " nodes processed";
-			}
-			console.log(g);
-					
-			let arrTest = g.genState(100);
-			render(arrTest, 'State: ' + g.hash(arrTest));
-			
-			let input = document.getElementById('input');
-			let renderButton = document.getElementById('renderButton');
-			
-			function displayID(){
-				render(g.genState(input.value));
-			}
-			
-			function handleEnter(e){
-				if(e.code == "Enter"){
-					displayID();
-				}
-			}
-		</script>
 		<div>
-			<a href = "./v2/">V2</a>
+			<a href="v1/">Version 1 (weird stuf)</a>
 		</div>
 	</body>
 </html>
