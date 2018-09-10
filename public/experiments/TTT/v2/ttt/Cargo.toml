@@ -5,5 +5,4 @@ authors = ["adumbidiot <nathaniel.daniel23@outlook.com>"]
 
 [dependencies]
 serde = "1.0"
-serde_derive = "1.0"
-rmp-serde = "0.13"
+serde_derive = "1.0.27"

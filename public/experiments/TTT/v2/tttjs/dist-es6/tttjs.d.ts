@@ -4,8 +4,6 @@ constructor(...args: any[]);
 free(): void;
 static  new(): Compiler;
 
- change_compilation(arg0: number): void;
-
  get_nodes_processed(): number;
 
  get_winners_processed(): number;
@@ -14,7 +12,9 @@ static  new(): Compiler;
 
  run(): void;
 
- export(): any;
+ export(): Uint8Array;
+
+ export_js(): any;
 
 }
 export class AI {
@@ -24,8 +24,6 @@ static  new(): AI;
 
  load(arg0: any): void;
 
- get_move(arg0: string, arg1: number): string;
-
- get_score(arg0: string): number;
+ get_move(arg0: number, arg1: string): number;
 
 }

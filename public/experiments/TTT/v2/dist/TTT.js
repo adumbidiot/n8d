@@ -13,6 +13,8 @@ var TTT = (function (exports) {
             return ((stack.length - 1) << 1) | 1;
         }
         
+        let cachedEncoder = new TextEncoder('utf-8');
+        
         let cachegetUint8Memory = null;
         function getUint8Memory() {
             if (cachegetUint8Memory === null || cachegetUint8Memory.buffer !== wasm.memory.buffer) {
@@ -21,8 +23,18 @@ var TTT = (function (exports) {
             return cachegetUint8Memory;
         }
         
-        function getArrayU8FromWasm(ptr, len) {
-            return getUint8Memory().subarray(ptr / 1, ptr / 1 + len);
+        function passStringToWasm(arg) {
+            
+            const buf = cachedEncoder.encode(arg);
+            const ptr = wasm.__wbindgen_malloc(buf.length);
+            getUint8Memory().set(buf, ptr);
+            return [ptr, buf.length];
+        }
+        
+        let cachedDecoder = new TextDecoder('utf-8');
+        
+        function getStringFromWasm(ptr, len) {
+            return cachedDecoder.decode(getUint8Memory().subarray(ptr, ptr + len));
         }
         
         let cachedGlobalArgumentPtr = null;
@@ -117,6 +129,16 @@ var TTT = (function (exports) {
                 return Compiler.__construct(wasm.compiler_new());
             }
             /**
+            * @param {number} arg0
+            * @returns {void}
+            */
+            change_compilation(arg0) {
+                if (this.ptr === 0) {
+                    throw new Error('Attempt to use a moved value');
+                }
+                return wasm.compiler_change_compilation(this.ptr, arg0);
+            }
+            /**
             * @returns {number}
             */
             get_nodes_processed() {
@@ -153,35 +175,13 @@ var TTT = (function (exports) {
                 return wasm.compiler_run(this.ptr);
             }
             /**
-            * @returns {Uint8Array}
+            * @returns {any}
             */
             export() {
                 if (this.ptr === 0) {
                     throw new Error('Attempt to use a moved value');
                 }
-                const ptr = this.ptr;
-                this.ptr = 0;
-                const retptr = globalArgumentPtr();
-                wasm.compiler_export(retptr, ptr);
-                const mem = getUint32Memory();
-                const rustptr = mem[retptr / 4];
-                const rustlen = mem[retptr / 4 + 1];
-                
-                const realRet = getArrayU8FromWasm(rustptr, rustlen).slice();
-                wasm.__wbindgen_free(rustptr, rustlen * 1);
-                return realRet;
-                
-            }
-            /**
-            * @returns {any}
-            */
-            export_js() {
-                if (this.ptr === 0) {
-                    throw new Error('Attempt to use a moved value');
-                }
-                const ptr = this.ptr;
-                this.ptr = 0;
-                return takeObject(wasm.compiler_export_js(ptr));
+                return takeObject(wasm.compiler_export(this.ptr));
             }
         }
         __exports.Compiler = Compiler;
@@ -238,15 +238,43 @@ var TTT = (function (exports) {
                 
             }
             /**
-            * @param {number} arg0
-            * @param {string} arg1
-            * @returns {number}
+            * @param {string} arg0
+            * @param {number} arg1
+            * @returns {string}
             */
             get_move(arg0, arg1) {
                 if (this.ptr === 0) {
                     throw new Error('Attempt to use a moved value');
                 }
-                return wasm.ai_get_move(this.ptr, arg0, arg1.codePointAt(0));
+                const [ptr0, len0] = passStringToWasm(arg0);
+                const retptr = globalArgumentPtr();
+                try {
+                    wasm.ai_get_move(retptr, this.ptr, ptr0, len0, arg1);
+                    const mem = getUint32Memory();
+                    const rustptr = mem[retptr / 4];
+                    const rustlen = mem[retptr / 4 + 1];
+                    
+                    const realRet = getStringFromWasm(rustptr, rustlen).slice();
+                    wasm.__wbindgen_free(rustptr, rustlen * 1);
+                    return realRet;
+                    
+                    
+                } finally {
+                    wasm.__wbindgen_free(ptr0, len0 * 1);
+                    
+                }
+                
+            }
+            /**
+            * @param {string} arg0
+            * @returns {number}
+            */
+            get_score(arg0) {
+                if (this.ptr === 0) {
+                    throw new Error('Attempt to use a moved value');
+                }
+                const [ptr0, len0] = passStringToWasm(arg0);
+                return wasm.ai_get_score(this.ptr, ptr0, len0);
             }
         }
         __exports.AI = AI;
@@ -262,25 +290,9 @@ var TTT = (function (exports) {
             return idx << 1;
         }
         
-        let cachedDecoder = new TextDecoder('utf-8');
-        
-        function getStringFromWasm(ptr, len) {
-            return cachedDecoder.decode(getUint8Memory().subarray(ptr, ptr + len));
-        }
-        
         __exports.__wbindgen_json_parse = function(ptr, len) {
             return addHeapObject(JSON.parse(getStringFromWasm(ptr, len)));
         };
-        
-        let cachedEncoder = new TextEncoder('utf-8');
-        
-        function passStringToWasm(arg) {
-            
-            const buf = cachedEncoder.encode(arg);
-            const ptr = wasm.__wbindgen_malloc(buf.length);
-            getUint8Memory().set(buf, ptr);
-            return [ptr, buf.length];
-        }
         
         __exports.__wbindgen_json_serialize = function(idx, ptrptr) {
             const [ptr, len] = passStringToWasm(JSON.stringify(getObject(idx)));
@@ -308,6 +320,9 @@ var TTT = (function (exports) {
             });
         }    self.TTT = Object.assign(init, __exports);
     })();
+
+    //import * as _internals2 from "../tttjs/dist-es6/tttjs.js";
+
 
     let _internals = window.TTT;
     window.TTT = undefined;

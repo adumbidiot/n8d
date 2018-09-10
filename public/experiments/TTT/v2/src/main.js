@@ -1,4 +1,6 @@
 import "../tttjs/dist/tttjs.js";
+//import * as _internals2 from "../tttjs/dist-es6/tttjs.js";
+
 
 let _internals = window.TTT;
 window.TTT = undefined;

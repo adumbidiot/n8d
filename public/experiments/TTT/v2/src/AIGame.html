@@ -84,6 +84,7 @@
 				
 				ctx.font = "30px Arial";
 				ctx.textAlign = "center";
+				
 				for(let i = 0; i != board.length; i++){
 					let x = ((i % 3) * 100) + 50;
 					
@@ -108,9 +109,16 @@
 					return;
 				}
 				
-				let move = ai.get_move(this.getHash(), this.getAIPiece());
+				let pieceID = (this.getAIPiece() == 'X') ? 1 : 2;
 				
-				console.log("Node:", move);
+				let move = ai.get_move(this.getHash(), pieceID);
+				
+				let node = {
+					id: move,
+					score: ai.get_score(move),
+				};
+				
+				console.log("Node", node);
 				
 				boardState = genState(move);
 				this.set({boardState, userTurn: invertPiece(this.getAIPiece())});
@@ -160,20 +168,17 @@
 				let t0 = performance.now();
 				c.run();
 				let t1 = performance.now();
-				
+				let table = c.export();
+				let t2 = performance.now();
 				
 				let report = `Compile Report: 
 				Compile Time: ${(t1 - t0)} ms
 				Nodes Processed: ${c.get_nodes_processed()} nodes
 				Winners Processed: ${c.get_winners_processed()} nodes
 				Nodes Scored: ${c.get_nodes_scored()} nodes
+				Export Time: ${t2 - t1} ms
+				Total Time: ${t2 - t0} ms
 				`;
-				
-				let t2 = performance.now();
-				let table = c.export_js();
-				let t3 = performance.now();
-				
-				report += `Export Time: ${t3 - t2} ms`;
 				
 				console.log(report);
 				

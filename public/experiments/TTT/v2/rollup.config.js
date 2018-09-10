@@ -3,6 +3,7 @@ import svelte from 'rollup-plugin-svelte';
 export default[
 	{
 		input: 'src/main.js',
+		treeshake: false,
 		output: {
 			name: 'TTT',
 			file: 'dist/TTT.js',
