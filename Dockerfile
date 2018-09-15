@@ -1,10 +1,15 @@
 FROM resin/rpi-raspbian:latest 
 
+#Update empty source lists
 RUN apt-get update
 
-#NODE
-RUN apt-get install node
+#Install apt-utils
+RUN apt-get install apt-utils
 
+#Install Node
+RUN apt-get install node -y 
+
+#Create App dir
 RUN mkdir /app
 
 ADD ./package.json ./app/package.json
@@ -13,7 +18,7 @@ RUN cd app && npm install
 ADD ./index.js ./app/index.js
 ADD ./public ./app/public
 
-RUN apt-get install curl
+RUN apt-get install curl -y
 
 RUN curl https://sh.rustup.rs -sSf > ./rust-init.sh
 RUN chmod +x ./rust-init.sh
