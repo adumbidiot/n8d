@@ -9,7 +9,7 @@ ADD ./index.js ./app/index.js
 ADD ./public ./app/public
 
 RUN apt-get install curl
-RUN curl https://sh.rustup.rs -sSf | sh
+RUN curl https://sh.rustup.rs -sSf | sh -y
 
 EXPOSE 8080 
 #Set up for 8080 ==> 9010
