@@ -1,4 +1,9 @@
-FROM hypriot/rpi-node:latest 
+FROM resin/rpi-raspbian:latest 
+
+RUN apt-get update
+
+#NODE
+RUN apt-get install node
 
 RUN mkdir /app
 
