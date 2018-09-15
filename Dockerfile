@@ -1,4 +1,5 @@
-FROM resin/rpi-raspbian:latest 
+#Base
+FROM armhf/debian
 
 #Update empty source lists
 RUN apt-get update
