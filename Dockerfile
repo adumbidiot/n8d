@@ -10,9 +10,9 @@ ADD ./public ./app/public
 
 RUN apt-get install curl
 
-RUN curl https://sh.rustup.rs -sSf > rust-init.sh
+RUN curl https://sh.rustup.rs -sSf > ./rust-init.sh
 RUN chmod +x ./rust-init.sh
-./rust-init.sh -y
+RUN ./rust-init.sh -y
 
 EXPOSE 8080 
 #Set up for 8080 ==> 9010
