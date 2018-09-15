@@ -26,9 +26,9 @@ RUN cd app && npm install
 #Add everything else
 ADD ./public ./app/public
 
-RUN curl https://sh.rustup.rs -sSf > ./rust-init.sh
-RUN chmod +x ./rust-init.sh
-RUN ./rust-init.sh -y
+#Rust
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
 
 #Set up for 8080 ==> 9010
 EXPOSE 8080 
