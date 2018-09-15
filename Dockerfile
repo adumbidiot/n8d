@@ -20,7 +20,7 @@ RUN mkdir /app
 
 #Add package.json and Install Packages to Prevent Redownloads
 ADD ./package.json ./app/package.json
-RUN cd app && /usr/sbin/npm install
+RUN cd app && npm install
 
 
 #Add everything else
@@ -34,4 +34,4 @@ RUN ./rust-init.sh -y
 EXPOSE 8080 
 
 
-CMD cd app && /usr/sbin/node index.js
+CMD cd app && node index.js
