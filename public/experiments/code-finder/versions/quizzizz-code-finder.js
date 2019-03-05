@@ -24,7 +24,7 @@ class codeFinder{
 		this.onconnection(this.connections); //tell user new conn
 		
 		let sock = this.sockets[this.sockets.length - 1];
-		sock.on('checkRoom', this.generateDataCallback(sock));
+		sock.on('v3/checkRoom', this.generateDataCallback(sock));
 		
 		if(!this.pause){ //if not paused..
 			this.startTry(sock); //try a code
@@ -37,13 +37,13 @@ class codeFinder{
 		this.tries++;
 		this.ontry(this.tries) //Report to user
 		sock.code = this.getCode(); //Get a new code
-		sock.emit('checkRoom', {roomCode: sock.code, d:1});//and send the try
+		sock.emit('v3/checkRoom', {roomCode: sock.code, d:1});//and send the try
 	}
 	generateDataCallback(sock){
 		return function(data){
 			let cur = sock.code;
 			
-			if(data){ //if exists.. (returns null if not)
+			if(!data.error){ //if exists.. (returns null if not)
 				//console.log(data);
 				this.oncode(cur); //return code TODO: Return More Data
 				if(this.pauseOnCode){

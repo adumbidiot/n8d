@@ -1,0 +1,73 @@
+<style>
+	.toggle {
+		width: 100px; 
+		height: 50px;
+		background-color: #b9d295;
+		border-radius: 50px; 
+		top: 25px; 
+		position:absolute; 
+		right: 10px;
+		text-align: center;
+		line-height: 50px;
+		color: #2f1830;
+		user-select: none;
+		font-size: 30px;
+	}
+	
+	.toggle:hover {
+		width: 96px;
+		height: 46px;
+		line-height: 46px;
+		background-color: #2f1830 !important;
+	}
+	.toggle-start:hover{
+		border: 2px solid #b9d295; 
+		color: #b9d295 !important;
+	}
+	.toggle-pause:hover{
+		border: 2px solid #ec0b43;
+		color: #ec0b43 !important;
+	}
+	.toggle-pause{
+		background-color: #ec0b43 !important;
+		color: #ec0b43 !important;
+	}
+	.code-display {
+		width: 200px;
+		height: 50px;
+		border: 2px solid #b9d295;
+		position: absolute;
+		top: 25px;
+		left: 25px;
+		color: #b9d295;
+		border-radius: 25px;
+		text-align: center;
+		line-height: 46px;
+		font-size: 30px;
+	}	
+	.main {
+		border-radius: 50px; 
+		height: 100px; 
+		width: 400px; 
+		background-color: #2f1830;
+		user-select: none;
+		position: relative;
+	}
+</style>
+
+<div class="main">
+	<div class="toggle {getCodes ? 'toggle-stop' : 'toggle-start'}">
+		{getCodes? 'Stop' : 'Start'}
+	</div>
+	<div class="code-display">Press Start...</div>
+</div>
+
+<script>
+	export default {
+		data(){
+			return {
+				getCodes: false,
+			};
+		},
+	};
+</script>

@@ -1,12 +1,14 @@
 <html>
 	<head>
-		<title>Quizizz Code Finder</title>
 		<script src="/scripts/socket.io.slim.js"></script>
-		<script src="quizzizz-code-finder.js"></script>
-		<script src="quizizz-codefinder.js"></script>
+		<script src="CodeFinder.js"></script>
 	</head>
 	<body>
-		<a href="./old.html">Old Test Area</a>
-		<quizizz-codefinder style="right: 0px; position: absolute;"></quizizz-codefinder>
+		<div id="finder"></div>
+		<script>
+			let finder = new CodeFinder.CodeFinderGui({
+				target: document.getElementById('finder'),
+			});
+		</script>
 	</body>
 </html>
