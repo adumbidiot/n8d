@@ -1,0 +1,11 @@
+<html>
+	<body>
+	</body>
+	<script>
+		(async function(){
+			let res = await fetch('./robotics.json');
+			let obj = await res.json();
+			console.log(obj);
+		})();
+	</script>
+</html>
