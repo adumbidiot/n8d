@@ -8,7 +8,7 @@
     "rollup": "^0.59.4",
     "rollup-plugin-riot": "^2.0.0",
     "rollup-plugin-svelte": "^4.1.0",
-    "svelte": "^2.7.2"
+    "svelte": "^3.49.0"
   },
   "devDependencies": {},
   "scripts": {
