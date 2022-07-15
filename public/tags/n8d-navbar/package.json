@@ -11,6 +11,6 @@
   "dependencies": {
     "rollup": "^0.59.3",
     "rollup-plugin-svelte": "^4.1.0",
-    "svelte": "^2.6.3"
+    "svelte": "^3.49.0"
   }
 }
